@@ -1,6 +1,7 @@
 # Build & compiled files & dependencies
 *.class
 .antlr
+.references
 
 # Log file
 *.log
