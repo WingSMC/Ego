@@ -14,27 +14,27 @@ IMPORT: 'import';
 EXPORT: 'export';
 
 /* Typenames */
-T_VOID: 'void';
-T_BOOL: 'bool';
-T_INT_8: 'i8';
-T_INT_16: 'i16';
-T_INT_32: 'i32';
-T_INT_64: 'i64';
-T_INT_128: 'i128';
-T_UINT_8: 'u8';
-T_UINT_16: 'u16';
-T_UINT_32: 'u32';
-T_UINT_64: 'u64';
-T_UINT_128: 'u128';
-T_FLOAT: 'float';
-T_DOUBLE: 'double';
-T_CHAR: 'char';
-T_CHAR_16: 'char16';
-T_STRING: 'string';
-T_DECIMAL: 'decimal';
-T_COMPLEX: 'complex';
-T_REGEX: 'regex';
-T_VAR: 'var';
+fragment T_VOID: 'void';
+fragment T_BOOL: 'bool';
+fragment T_INT_8: 'i8';
+fragment T_INT_16: 'i16';
+fragment T_INT_32: 'i32';
+fragment T_INT_64: 'i64';
+fragment T_INT_128: 'i128';
+fragment T_UINT_8: 'u8';
+fragment T_UINT_16: 'u16';
+fragment T_UINT_32: 'u32';
+fragment T_UINT_64: 'u64';
+fragment T_UINT_128: 'u128';
+fragment T_FLOAT: 'float';
+fragment T_DOUBLE: 'double';
+fragment T_CHAR: 'char';
+fragment T_CHAR_16: 'char16';
+fragment T_STRING: 'string';
+fragment T_DECIMAL: 'decimal';
+fragment T_COMPLEX: 'complex';
+fragment T_REGEX: 'regex';
+fragment T_AUTO: 'auto';
 TYPENAME:
 	T_BOOL
 	| T_INT_8
@@ -52,7 +52,7 @@ TYPENAME:
 	| T_CHAR
 	| T_CHAR_16
 	| T_STRING
-	| T_VAR
+	| T_AUTO
 	| T_VOID;
 
 /* Structures */
@@ -119,6 +119,7 @@ F_RETURN: '=>';
 /* Other keywords */
 SUPER: 'super';
 THIS: 'this';
+THREAD: 'thread';
 
 /* Operators */
 fragment ARR: '[]';
@@ -195,13 +196,13 @@ BIT_XOR: '^';
 BIT_NOT: '~';
 BIT_NOT_NOT: '~~'; // ~~a is equivalent to a: ~a
 /* Logical */
-LOG_AND_ASSIGN: '&&:';
-LOG_AND: '&&';
-LOG_OR_ASSIGN: '||:';
-LOG_OR: '||';
-LOG_XOR_ASSIGN: '^^:';
-LOG_XOR: '^^';
-LOG_NOT: '!';
+LOG_AND_ASSIGN: '&&:' | 'and:';
+LOG_AND: '&&' | 'and';
+LOG_OR_ASSIGN: '||:' | 'or:';
+LOG_OR: '||' | 'or';
+LOG_XOR_ASSIGN: '^^:' | 'xor:';
+LOG_XOR: '^^' | 'xor';
+LOG_NOT: '!' | 'not';
 LOG_NOT_NOT: '!!'; // !!a is equivalent to a: !a
 /* Other */
 NON_NULL_EXPR_CHAIN: '??';
