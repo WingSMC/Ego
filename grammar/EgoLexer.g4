@@ -9,6 +9,115 @@ LINE_COMMENT: '//' ~[\r\n]* -> skip;
 WS: [ \t\f] -> skip;
 NL: '\r'? '\n';
 
+fragment BACKSLASH: '\\';
+fragment ESCAPE_SEQ:
+	BACKSLASH BACKSLASH
+	| BACKSLASH '\''
+	| BACKSLASH '"'
+	| BACKSLASH '?'
+	| BACKSLASH 'a'
+	| BACKSLASH 'b'
+	| BACKSLASH 'f'
+	| BACKSLASH 'n'
+	| BACKSLASH 'r'
+	| (BACKSLASH ('\r' '\n'? | '\n'))
+	| BACKSLASH 't'
+	| BACKSLASH 'v';
+fragment ARR: '[]';
+fragment ARR_SIZED: '[' LIT_INT ']';
+
+/************************* Operators *************************/
+/* Memory / Declaration / Access */
+// TODO ARRAY_ACCESS
+SCOPE: '::';
+ASSIGN: ':';
+// FIXME same as bitwise &
+ADDR: '&';
+DEREF: '@';
+ARROW_DEREF_ASSIGN: '->@:';
+ARROW_DEREF: '->@';
+ARROW_ASSIGN: '->:';
+ARROW: '->';
+DOT_DEREF_ASSIGN: '.@:';
+DOT_DEREF: '.@';
+DOT_ASSIGN: '.:';
+DOT: '.';
+S_COMMA: ',';
+NEW_ARR: NEW ARR_SIZED;
+DELETE_ARR: DELETE ARR;
+UNIQUE_ARR: UNIQUE ARR_SIZED;
+SHARED_ARR: SHARED ARR_SIZED;
+NEW: 'new';
+DELETE: 'delete';
+UNIQUE: 'unique';
+SHARED: 'shared';
+NOT: 'not';
+IS: 'is';
+AS: 'as';
+TYPEOF: 'typeof';
+/* Comparison */
+COMP_LTE: '<=';
+COMP_LT: '<';
+COMP_GTE: '>=';
+COMP_GT: '>';
+COMP_EQ: '==';
+COMP_NEQ: '!=';
+/* Arithmetic */
+AR_INCR: '++';
+AR_ADD_ASSIGN: '+:';
+AR_ADD: '+';
+AR_DECR: '--';
+AR_SUB_ASSIGN: '-:';
+AR_SUB: '-';
+AR_EXP_ASSIGN: '**:';
+AR_EXP: '**';
+// TODO LOG?
+AR_MUL_ASSIGN: '*:';
+AR_MUL: '*';
+AR_DIV_ASSIGN: '/:';
+AR_DIV: '/';
+AR_MOD_ASSIGN: '%:';
+AR_MOD: '%';
+SH_LS_ASSIGN: '<<<:';
+SH_LS: '<<<';
+SH_L_ASSIGN: '<<:';
+SH_L: '<<';
+SH_RS_ASSIGN: '>>>:';
+SH_RS: '>>>';
+SH_R_ASSIGN: '>>:';
+SH_R: '>>';
+ROT_LEFT_ASSIGN: '<=<:';
+ROT_LEFT: '<=<';
+ROT_RIGHT_ASSIGN: '>=>:';
+ROT_RIGHT: '>=>';
+BIT_AND_ASSIGN: '&:';
+BIT_AND: '&';
+BIT_OR_ASSIGN: '|:';
+BIT_OR: '|';
+BIT_XOR_ASSIGN: '^:';
+BIT_XOR: '^';
+BIT_NOT_NOT: '~~'; // ~~a is equivalent to a: ~a
+BIT_NOT_ASSIGN: '~:';
+BIT_NOT: '~';
+/* Logical */
+LOG_AND_ASSIGN: '&&:' | 'and:';
+LOG_AND: '&&' | 'and';
+LOG_OR_ASSIGN: '||:' | 'or:';
+LOG_OR: '||' | 'or';
+LOG_XOR_ASSIGN: '^^:' | 'xor:';
+LOG_XOR: '^^' | 'xor';
+LOG_NOT_NOT: '!!'; // !!a is equivalent to a: !a
+LOG_NOT_ASSIGN: '!:' | 'not:';
+LOG_NOT: '!' | 'not';
+/* Other */
+NULL_COALESCE_ASSIGN: '??:'; // Assign if lvalue is null
+NULL_COALESCE: '??';
+NULL_COALESCE_MEMBER_ASSIGN: '?.:';
+NULL_COALESCE_MEMBER: '?.';
+NULL_NON_NULL_ASSIGN: '?:'; // Assign if rvalue is not null
+NULL_IS_NULL: '?';
+ELLIPSIS: '...';
+
 /* Module */
 IMPORT: 'import';
 EXPORT: 'export';
@@ -67,19 +176,26 @@ EXCEPTION: 'exception';
 ANNOTATION: 'annotation';
 
 /* Modifiers */
-M_PUBLIC: 'public';
-M_PROTECTED: 'protected';
-M_PRIVATE: 'private';
-M_INTERNAL: 'internal';
-M_VIRTUAL: 'virtual';
-M_OVERRIDE: 'override';
-M_INLINE: 'inline';
-M_ABSTRACT: 'abstract';
-M_STATIC: 'static';
-M_MUT: 'mut';
-M_VOLATILE: 'volatile';
-M_CLASS_MODIFIER: M_VIRTUAL | M_ABSTRACT | M_STATIC;
-M_CLASS_INHERITANCE: ':' IDENTIFIER (',' IDENTIFIER)*;
+fragment M_PUBLIC: 'public';
+fragment M_PROTECTED: 'protected';
+fragment M_PRIVATE: 'private';
+fragment M_INTERNAL: 'internal';
+fragment M_VIRTUAL: 'virtual';
+fragment M_OVERRIDE: 'override';
+fragment M_INLINE: 'inline';
+fragment M_ABSTRACT: 'abstract';
+fragment M_STATIC: 'static';
+fragment M_MUT: 'mut';
+fragment M_VOLATILE: 'volatile';
+M_ACCESS: M_PUBLIC | M_PROTECTED | M_PRIVATE | M_INTERNAL;
+M_FUNCTION:
+	M_INLINE
+	| M_ABSTRACT
+	| M_STATIC
+	| M_VIRTUAL
+	| M_OVERRIDE;
+M_FIELD: M_STATIC | M_MUT | M_VOLATILE;
+M_CLASS: M_VIRTUAL | M_ABSTRACT | M_STATIC;
 
 /* Literals */
 fragment DEC_DIGIT_NOZERO: UNICODE_CLASS_ND_NOZEROS;
@@ -96,7 +212,7 @@ LIT_DOUBLE: ([1-9][0-9]* | '0')? '.' [0-9]+ ('e' [1-9][0-9]*)?;
 LIT_NULL: 'null';
 LIT_TRUE: 'true';
 LIT_FALSE: 'false';
-LIT_CHAR: '\'' (. | UNICODE_CHAR_LIT) '\'';
+LIT_CHAR: '\'' (. | UNICODE_CHAR_LIT | ESCAPE_SEQ) '\'';
 QUOTE_OPEN: '"' -> pushMode(LineString);
 TRIPLE_QUOTE_OPEN: '"""' -> pushMode(MultiLineString);
 
@@ -114,101 +230,13 @@ F_SWITCH: 'switch';
 F_BREAK: '<|';
 F_CONTINUE: '|>';
 F_THROW: '=>>';
-F_RETURN: '=>';
+F_RETURN: '=';
 
 /* Other keywords */
 SUPER: 'super';
 THIS: 'this';
 THREAD: 'thread';
 
-/* Operators */
-fragment ARR: '[]';
-fragment ARR_SIZED: '[' LIT_INT ']';
-
-/* Memory / Declaration / Access */
-// TODO ARRAY_ACCESS
-SCOPE: '::';
-ASSIGN: ':';
-// FIXME same as bitwise &
-ADDR: '&';
-DEREF: '@';
-ARROW_DEREF: '->@';
-ARROW_DEREF_ASSIGN: '->@:';
-ARROW_ASSIGN: '->:';
-ARROW: '->';
-DOT_DEREF: '.@';
-DOT_DEREF_ASSIGN: '.@:';
-DOT_ASSIGN: '.:';
-DOT: '.';
-S_COMMA: ',';
-NEW_ARR: NEW ARR_SIZED;
-DELETE_ARR: DELETE ARR;
-UNIQUE_ARR: UNIQUE ARR_SIZED;
-SHARED_ARR: SHARED ARR_SIZED;
-NEW: 'new';
-DELETE: 'delete';
-UNIQUE: 'unique';
-SHARED: 'shared';
-NOT: 'not';
-IS: 'is';
-AS: 'as';
-/* Comparison */
-COMP_LTE: '<=';
-COMP_LT: '<';
-COMP_GTE: '>=';
-COMP_GT: '>';
-COMP_EQ: '==';
-COMP_NEQ: '!=';
-/* Arithmetic */
-AR_INCR: '++';
-AR_ADD_ASSIGN: '+:';
-AR_ADD: '+';
-AR_DECR: '--';
-AR_SUB_ASSIGN: '-:';
-AR_SUB: '-';
-AR_EXP_ASSIGN: '**:';
-AR_EXP: '**';
-// TODO LOG?
-AR_MUL_ASSIGN: '*:';
-AR_MUL: '*';
-AR_DIV_ASSIGN: '/:';
-AR_DIV: '/';
-AR_MOD_ASSIGN: '%:';
-AR_MOD: '%';
-SH_LS_ASSIGN: '<<<:';
-SH_LS: '<<<';
-SH_L_ASSIGN: '<<:';
-SH_L: '<<';
-SH_RS_ASSIGN: '>>>:';
-SH_RS: '>>>';
-SH_R_ASSIGN: '>>:';
-SH_R: '>>';
-ROT_LEFT_ASSIGN: '<=<:';
-ROT_LEFT: '<=<';
-ROT_RIGHT_ASSIGN: '>=>:';
-ROT_RIGHT: '>=>';
-BIT_AND_ASSIGN: '&:';
-BIT_AND: '&';
-BIT_OR_ASSIGN: '|:';
-BIT_OR: '|';
-BIT_XOR_ASSIGN: '^:';
-BIT_XOR: '^';
-BIT_NOT: '~';
-BIT_NOT_NOT: '~~'; // ~~a is equivalent to a: ~a
-/* Logical */
-LOG_AND_ASSIGN: '&&:' | 'and:';
-LOG_AND: '&&' | 'and';
-LOG_OR_ASSIGN: '||:' | 'or:';
-LOG_OR: '||' | 'or';
-LOG_XOR_ASSIGN: '^^:' | 'xor:';
-LOG_XOR: '^^' | 'xor';
-LOG_NOT: '!' | 'not';
-LOG_NOT_NOT: '!!'; // !!a is equivalent to a: !a
-/* Other */
-NON_NULL_EXPR_CHAIN: '??';
-NON_NULL_MEMBER_CHAIN: '?.';
-IS_NULL: '?';
-ELLIPSIS: '...';
 // TODO ternary and switch
 
 LCURLY: '{';
@@ -218,37 +246,11 @@ RPAREN: ')';
 LSQUARE: '[' -> pushMode(Inside);
 RSQUARE: ']';
 
-/*
- S_TWO_DOTS: '..';
- S_SQUIGGLY_ARROW: '~>';
- S_LEFT_ARROW: '<-';
- S_TWO_WAY_ARROW:'<->';
- S_TWO_WAY_DOUBLE_ARROW: '<=>';
- S_DIAMOND: '<>';
- S_BACKTICK: '`';
- S_EQUAL: '=';
- */
-
 fragment INTERPOLATED_VARIABLE: INTERPOLATION IDENTIFIER;
 IDENTIFIER: [_a-zA-Z][_a-zA-Z0-9]*;
 INTERPOLATION: '$';
 // TODO
 EOS: ';' | [\r\n][\r\n\t ]* ~'.';
-
-fragment BACKSLASH: '\\';
-fragment ESCAPE_SEQ:
-	BACKSLASH BACKSLASH
-	| BACKSLASH '\''
-	| BACKSLASH '"'
-	| BACKSLASH '?'
-	| BACKSLASH 'a'
-	| BACKSLASH 'b'
-	| BACKSLASH 'f'
-	| BACKSLASH 'n'
-	| BACKSLASH 'r'
-	| (BACKSLASH ('\r' '\n'? | '\n'))
-	| BACKSLASH 't'
-	| BACKSLASH 'v';
 
 mode Inside;
 // TODO
@@ -275,3 +277,58 @@ StrExpr_RCURL: RCURLY -> popMode, type(RCURLY);
 StrExpr_LPAREN: LPAREN -> pushMode(Inside), type(LPAREN);
 StrExpr_LSQUARE: LSQUARE -> pushMode(Inside), type(LSQUARE);
 // TODO
+
+/* Unused symbols
+ ??.:
+ ??->:
+ yield
+ ===
+ !==
+ <-
+ >-
+ -> pointer member access
+ -<
+ <->
+ >-<
+ <--
+ -->
+ <<-
+ >>-
+ ->>
+ -<<
+ <-<
+ >->
+ <= LTE
+ =>
+ <=>
+ <==
+ ==>
+ <==>
+ <<=
+ =>> throw
+ >>=
+ =<<
+ >=> rotate_right
+ <=< rotate_left
+ >=<
+ <~
+ >~
+ ~>
+ ~<
+ <~>
+ <~~
+ ~~>
+ =<
+ =!=
+ -.-
+ .-
+ .=
+ ..
+ ~=
+ <>
+ ><
+ `
+ :<
+ :>
+ :(...)
+ */
