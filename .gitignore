@@ -3,6 +3,10 @@
 .antlr
 .references
 
+# IDE
+.idea
+*.iml
+
 # Log file
 *.log
 
