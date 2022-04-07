@@ -110,3 +110,7 @@ m_function:
 	| M_OVERRIDE;
 m_field: M_STATIC | M_MUT | M_VOLATILE;
 m_class: M_VIRTUAL | M_ABSTRACT | M_STATIC;
+
+// TODO & operator addr & or
+
+// TODO ARRAY_ACCESS 
