@@ -6,13 +6,8 @@ options {
 
 program: moduleDeclStatement EOF;
 seq: stmt*;
-stmt:
-	blockStmt
-	| whileStmt
-	| doWhileStmt
-	| forStmt
-	| returnStmt;
-blockStmt: LCURLY seq RCURLY;
+block: LCURLY seq RCURLY;
+stmt: block | whileStmt | doWhileStmt | forStmt | returnStmt;
 whileStmt: F_WHILE expr stmt;
 doWhileStmt: F_DO stmt F_WHILE expr;
 forStmt: F_FOR forHeaderStmt stmt;
