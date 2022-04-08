@@ -2,13 +2,13 @@ lexer grammar EgoLexer;
 
 import UnicodeClasses;
 
-/* Comment / Preproccessor */
-PREPROCESSOR: '#' ~[\r\n]* -> skip;
-BLOCK_COMMENT: '/*' .*? '*/' -> skip;
-LINE_COMMENT: '//' ~[\r\n]* -> skip;
-WS: [ \t\f] -> skip;
-NL: '\r'? '\n';
+tokens {
+}
 
+channels {
+}
+
+fragment WS: [ \t\f\r\n]*;
 fragment BACKSLASH: '\\';
 fragment ESCAPE_SEQ:
 	BACKSLASH BACKSLASH
@@ -25,6 +25,13 @@ fragment ESCAPE_SEQ:
 	| BACKSLASH 'v';
 fragment ARR: '[]';
 fragment ARR_SIZED: '[' LIT_INT ']';
+
+WHITESPACE: [ \t\f] -> skip;
+NL: '\r'? '\n';
+PREPROCESSOR: '#' ~[\r\n]* -> skip;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
+SEMI: ';';
 
 /************************* Operators *************************/
 SCOPE: '::';
@@ -43,12 +50,12 @@ SH_L_ASSIGN: '<<:';
 SH_R_ASSIGN: '>>:';
 GT_ASSIGN: '<:';
 LT_ASSIGN: '>:';
-BIT_AND_ASSIGN: '&:';
-BIT_OR_ASSIGN: '|:';
-BIT_XOR_ASSIGN: '^:';
 LOG_AND_ASSIGN: '&&:' | 'and:';
 LOG_OR_ASSIGN: '||:' | 'or:';
 LOG_XOR_ASSIGN: '^^:' | 'xor:';
+BIT_AND_ASSIGN: '&:';
+BIT_OR_ASSIGN: '|:';
+BIT_XOR_ASSIGN: '^:';
 NULL_COALESCE_ASSIGN: '??:'; // Assign if lvalue is null
 NULL_NON_NULL_ASSIGN: '?:'; // Assign if rvalue is not null
 NULL_COALESCE_MEMBER_ASSIGN: '?.:';
@@ -64,10 +71,6 @@ BIT_NOT_NOT: '~~';
 LOG_NOT_NOT: '!!';
 
 /* Memory / Declaration / Access */
-// TODO ARRAY_ACCESS 
-
-// FIXME same as bitwise &
-ADDR: '&';
 DEREF: '@';
 ARROW_DEREF: '->@';
 ARROW: '->';
@@ -96,7 +99,6 @@ COMP_NEQ: '!=';
 AR_ADD: '+';
 AR_SUB: '-';
 AR_EXP: '**';
-// TODO Logarithm?
 AR_MUL: '*';
 AR_DIV: '/';
 AR_MOD: '%';
@@ -106,24 +108,20 @@ SH_RS: '>>>';
 SH_R: '>>';
 ROT_LEFT: '<=<';
 ROT_RIGHT: '>=>';
-BIT_AND: '&';
-BIT_OR: '|';
-BIT_XOR: '^';
-BIT_NOT: '~';
 /* Logical */
 LOG_AND: '&&' | 'and';
 LOG_OR: '||' | 'or';
 LOG_XOR: '^^' | 'xor';
 LOG_NOT: '!' | 'not';
+AMP: '&';
+BIT_OR: '|';
+BIT_XOR: '^';
+BIT_NOT: '~';
 /* Other */
 NULL_COALESCE: '??';
 NULL_COALESCE_MEMBER: '?.';
 NULL_IS_NULL: '?';
 ELLIPSIS: '...';
-
-/* Module */
-IMPORT: 'import';
-EXPORT: 'export';
 
 /* Typenames */
 T_VOID: 'void';
@@ -154,16 +152,20 @@ T_MAT_4: 'mat4';
 T_REGEX: 'regex';
 T_AUTO: 'auto';
 
+/* Module */
+IMPORT: 'import';
+EXPORT: 'export';
 /* Structures */
-NAMESPACE: 'namespace';
-ALIAS: 'alias';
-ENUM: 'enum';
-INTERFACE: 'interface';
-CLASS: 'class';
-RECORD: 'record';
-OBJECT: 'object';
-EXCEPTION: 'exception';
-ANNOTATION: 'annotation';
+STRUCT_NAMESPACE: 'namespace';
+STRUCT_ALIAS: 'alias';
+STRUCT_ENUM: 'enum';
+STRUCT_INTERFACE: 'interface';
+STRUCT_CLASS: 'class';
+STRUCT_RECORD: 'record';
+STRUCT_OBJECT: 'object';
+STRUCT_EXCEPTION: 'exception';
+STRUCT_ANNOTATION: 'annotation';
+STRUCT_ASM: 'asm' LCURLY .* RCURLY;
 
 /* Modifiers */
 M_PUBLIC: 'public';
@@ -177,6 +179,7 @@ M_ABSTRACT: 'abstract';
 M_STATIC: 'static';
 M_MUT: 'mut';
 M_VOLATILE: 'volatile';
+M_REF: 'ref';
 
 /* Literals */
 fragment DEC_DIGIT_NOZERO: UNICODE_CLASS_ND_NOZEROS;
@@ -208,53 +211,53 @@ F_TRY: 'try';
 F_CATCH: 'catch';
 F_FINALLY: 'finally';
 F_WHEN: 'when';
-F_TRICKLE:
-	'~>'; // opposite of break where break is implicitly added
-F_BREAK: '<|';
-F_CONTINUE: '|>';
-F_THROW: '=>>';
-F_RETURN: '=';
+F_LABEL: 'label';
+// opposite of break where break is implicitly added
+F_BREAK: '<|' | 'break';
+F_CONTINUE: '|>' | 'continue';
+F_RETURN: '=' | '=>' | 'ret' | 'return';
+F_THROW: '=>>' | 'throw';
+F_TRICKLE: '~>' | 'trickle';
+F_GOTO: '->>' | 'goto';
 
 /* Other keywords */
 SUPER: 'super';
 THIS: 'this';
 THREAD: 'thread';
+GET: 'get';
+SET: 'set';
+DEFAULT: '_';
 
 LCURLY: '{';
 RCURLY: '}';
-LPAREN: '(' -> pushMode(Inside);
+LPAREN: '(';
 RPAREN: ')';
-LSQUARE: '[' -> pushMode(Inside);
+LSQUARE: '[';
 RSQUARE: ']';
 
 fragment INTERPOLATED_VARIABLE: INTERPOLATION IDENTIFIER;
 IDENTIFIER: [_a-zA-Z][_a-zA-Z0-9]*;
 INTERPOLATION: '$';
-// TODO
-EOS: ';' | [\r\n][\r\n\t ]* ~'.';
-
-mode Inside;
-// TODO
 
 mode LineString;
 QUOTE_CLOSE: '"' -> popMode;
-LineStrRef: INTERPOLATED_VARIABLE;
-LineStrText: ~(BACKSLASH | '"' | '$')+ | '$';
-LineStrEscapedChar: BACKSLASH . | UNICODE_CHAR_LIT;
-LineStrExprStart: '${' -> pushMode(StringExpression);
+LINE_STR_REF: INTERPOLATED_VARIABLE;
+LINE_STR_TEXT: ~(BACKSLASH | '"' | '$')+ | '$';
+LINE_STR_ESCAPED_CHAR: BACKSLASH . | UNICODE_CHAR_LIT;
+LINE_STR_EXPR_START: '$' LCURLY -> pushMode(StringExpression);
 
 mode MultiLineString;
-TRIPLE_QUOTE_CLOSE: MultiLineStringQuote? '"""' -> popMode;
-MultiLineStringQuote: '"'+;
-MultiLineStrRef: INTERPOLATED_VARIABLE;
-MultiLineStrText: ~(BACKSLASH | '"' | '$')+ | '$';
-MultiLineStrEscapedChar: BACKSLASH .;
-MultiLineStrExprStart:
+TRIPLE_QUOTE_CLOSE: MULTILINE_STR_QUOTE? '"""' -> popMode;
+MULTILINE_STR_QUOTE: '"'+;
+MULTILINE_STR_REF: INTERPOLATED_VARIABLE;
+MULTILINE_STR_TEXT:
+	~(BACKSLASH | MULTILINE_STR_QUOTE | '$')+
+	| '$';
+MULTILINE_STR_ESC: BACKSLASH .;
+MULTILINE_STR_EXPR_START:
 	'$' LCURLY -> pushMode(StringExpression);
-MultiLineNL: NL -> skip;
+MULTILINE_NL: NL -> skip;
 
 mode StringExpression;
-StrExpr_RCURL: RCURLY -> popMode, type(RCURLY);
-StrExpr_LPAREN: LPAREN -> pushMode(Inside), type(LPAREN);
-StrExpr_LSQUARE: LSQUARE -> pushMode(Inside), type(LSQUARE);
+STR_EXPR_RCURL: RCURLY -> popMode;
 // TODO
