@@ -165,7 +165,7 @@ STRUCT_RECORD: 'record';
 STRUCT_OBJECT: 'object';
 STRUCT_EXCEPTION: 'exception';
 STRUCT_ANNOTATION: 'annotation';
-STRUCT_ASM: 'asm' LCURLY .? RCURLY;
+STRUCT_ASM: 'asm' LCURLY .* RCURLY;
 
 /* Modifiers */
 M_PUBLIC: 'public';
@@ -215,9 +215,9 @@ F_LABEL: 'label';
 // opposite of break where break is implicitly added
 F_BREAK: '<|' | 'break';
 F_CONTINUE: '|>' | 'continue';
-F_RETURN: '=' | 'ret' | 'return';
+F_RETURN: '=' | '=>' | 'ret' | 'return';
 F_THROW: '=>>' | 'throw';
-F_TRICKLE: '->' | 'trickle';
+F_TRICKLE: '~>' | 'trickle';
 F_GOTO: '->>' | 'goto';
 
 /* Other keywords */
