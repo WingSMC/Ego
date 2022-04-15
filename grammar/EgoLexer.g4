@@ -237,7 +237,7 @@ IDENTIFIER: [_a-zA-Z][_a-zA-Z0-9]*;
 
 mode LineString;
 QUOTE_CLOSE: '"' -> popMode;
-LINE_STR_TEXT: ~[\\"$\n\r]+;
+LINE_STR_TEXT: ~[$\\\"\n\r]+;
 LINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR;
 LINE_STR_REF: INTERP_VAR;
 LINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(StringExpression);
