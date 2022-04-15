@@ -1,24 +1,27 @@
 import {
-    A
+	A from "Props"
 }
 
+[InstanceOf]
 class B: A {
-    u32 field: 10
-    u32 fieldProp1 {
-        get => this.field
-        set => this.field: value * 10
-    }
+	public () {
+		A(10)
+	}
 
-    u32 prop {
-        get => prop
-        set {
-            print("prop set")
-            prop = value
-        }
-    }
+	hello() {
+		print("Hello")
+	}
+
+	i32 main() {
+		hello()
+		this.hello()
+		this->hello()
+		(@this).hello()
+		=> 0
+	}
 }
 
 export {
-    A,
-    B as C
+	A,
+	B as "C"
 }

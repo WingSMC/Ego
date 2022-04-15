@@ -18,25 +18,20 @@ memberDeclStatement:
 	| memberClassDecl
 	| memberInterfaceDecl
 	| memberEnumDecl;
-moduleDeclStatement:
-	memberDeclStatement
-	| moduleImportDecl
-	| moduleExportDecl;
-classBodyDeclStatement:
-	memberDeclStatement
-	| memberConstructorDecl;
-memberFieldDecl:
-	typeQualifier? typename IDENTIFIER EOS
-	| typeQualifier? typename ASSIGN stmt;
+moduleDeclStatement: memberDeclStatement | moduleImportDecl | moduleExportDecl;
+classBodyDeclStatement: memberDeclStatement | memberConstructorDecl;
+memberFieldDecl: typeQualifier? typename IDENTIFIER | typeQualifier? typename ASSIGN expr;
 forHeaderStmt:;
 returnStmt: F_RETURN expr;
 assignStmt: IDENTIFIER ASSIGN expr;
 expr:;
-memberClassDecl:
-	m_class* CLASS IDENTIFIER? classInheritance? LCURLY classBodyDeclStatement RCURLY;
+coalescingExpr: expr NULL_COALESCE <assoc = right> expr;
+assignmentExpr: IDENTIFIER opAssignment <assoc = right> expr;
 
-classInheritance: ASSIGN IDENTIFIER (S_COMMA IDENTIFIER)*;
-assignments:
+memberClassDecl: mod_class* STRUCT_CLASS IDENTIFIER? classInheritance? LCURLY classBodyDeclStatement RCURLY;
+
+classInheritance: ASSIGN IDENTIFIER (COMMA IDENTIFIER)*;
+opAssignment:
 	ASSIGN
 	| ADD_ASSIGN
 	| SUB_ASSIGN
@@ -65,11 +60,7 @@ assignments:
 	| ARROW_DEREF_ASSIGN
 	| ARROW_ASSIGN
 	| DOT_DEREF_ASSIGN;
-unary_assignments:
-	AR_INCR
-	| AR_DECR
-	| BIT_NOT_NOT
-	| LOG_NOT_NOT;
+unaryAssignments: AR_INCR | AR_DECR | BIT_NOT_NOT | LOG_NOT_NOT;
 typename:
 	T_BOOL
 	| T_INT_8
@@ -93,19 +84,12 @@ typename:
 	| T_CHAR
 	| T_CHAR_16
 	| T_STRING
-	| T_AUTO
+	| T_VAL
+	| M_VAR
 	| T_VOID;
 
-m_access: M_PUBLIC | M_PROTECTED | M_PRIVATE | M_INTERNAL;
-m_function:
-	M_INLINE
-	| M_ABSTRACT
-	| M_STATIC
-	| M_VIRTUAL
-	| M_OVERRIDE;
-m_field: M_STATIC | M_MUT | M_VOLATILE;
-m_class: M_VIRTUAL | M_ABSTRACT | M_STATIC;
-
-// TODO & operator addr & or
-
-// TODO ARRAY_ACCESS 
+mod_access: M_PUBLIC | M_PROTECTED | M_PRIVATE | M_INTERNAL;
+mod_function: M_INLINE | M_ABSTRACT | M_STATIC | M_VIRTUAL | M_OVERRIDE;
+mod_field: M_STATIC | M_VAR | M_VOLATILE;
+mod_class: M_VIRTUAL | M_ABSTRACT | M_STATIC | M_FINAL;
+eos: SEMI | NL | EOF;

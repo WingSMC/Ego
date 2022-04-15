@@ -1,0 +1,21 @@
+string a = "asd"
+string b = "$asd"
+string c = "${a}sd"
+string d = "$$"
+string e = "\\\n"
+string am = """asd"""
+string bm = """$asd"""
+string cm = """${a}sd"""
+string dm = """$$"""
+string em = """Hello,
+World!"""
+string fm = "$"
+string gm = """$"""
+string hm = """a"Hello""""
+string im = """"""""
+
+export {
+	a as "xyz"
+}
+
+string f = "a
