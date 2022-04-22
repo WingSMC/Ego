@@ -3,10 +3,18 @@ import {
 }
 
 [InstanceOf]
-class B: A {
+class B: A, C {
 	public () {
 		A(10)
 	}
+
+	u32 prop {
+			get => prop
+			set {
+					print("prop set")
+					prop: value
+			}
+	}: 100
 
 	hello() {
 		print("Hello")
