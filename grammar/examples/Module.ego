@@ -13,9 +13,9 @@ class B: A {
         get => prop
         set {
             print("prop set")
-            prop = value
+            prop: value
         }
-    }
+    }: 100
 }
 
 export {
