@@ -2,6 +2,14 @@ lexer grammar EgoLexer;
 
 import UnicodeClasses;
 
+tokens {
+	STR_REF,
+	STR_EXPR_START,
+	STR_EXPR_END,
+	STR_ESCAPED_CHAR,
+	STR_TEXT
+}
+
 fragment WS: [ \t\f\r\n]*;
 fragment BACKSLASH: '\\';
 fragment ESCAPE_SEQ:
@@ -19,7 +27,7 @@ fragment ESCAPE_SEQ:
   | BACKSLASH 'v';
 fragment INTERP: '$';
 fragment INTERP_VAR: INTERP IDENTIFIER;
-fragment STR_ESACAPED_CHAR: BACKSLASH . | UNICODE_CHAR_LIT;
+fragment STR_ESACAPED_CHAR_FRAG: BACKSLASH . | UNICODE_CHAR_LIT;
 fragment STR_EXPRESSION_START: INTERP LCURLY;
 fragment DEC_DIGIT_NOZERO: UNICODE_CLASS_ND_NOZEROS;
 fragment DEC_DIGIT: UNICODE_CLASS_ND;
@@ -74,10 +82,11 @@ T_REGEX: 'regex';
 T_VAL: 'val';
 
 /* Module */
+MODULE: 'module';
 IMPORT: 'import';
 EXPORT: 'export';
-/* Structures */
-STRUCT_NAMESPACE: 'namespace';
+FROM: 'from';
+// AS is also a cast operator
 STRUCT_ALIAS: 'alias';
 STRUCT_ENUM: 'enum';
 STRUCT_INTERFACE: 'interface';
@@ -211,12 +220,18 @@ COMP_EQ: '==';
 COMP_NEQ: '!=';
 /* Logical */
 LOG_AND: '&&' | 'and';
+LOG_NAND: '!&&' | 'nand';
 LOG_OR: '||' | 'or';
+LOG_NOR: '!||' | 'nor';
 LOG_XOR: '^^' | 'xor';
+LOG_XNOR: '!^^' | 'xnor';
 LOG_NOT: '!' | 'not';
 AMP: '&';
+BIT_NAND: '~&';
 BIT_OR: '|';
+BIT_NOR: '~|';
 BIT_XOR: '^';
+BIT_XNOR: '~^';
 BIT_NOT: '~';
 /* Other */
 NULL_COALESCE: '??';
@@ -236,19 +251,19 @@ SET: 'set';
 IDENTIFIER: [_a-zA-Z][_a-zA-Z0-9]*;
 
 mode LineString;
-QUOTE_CLOSE: '"' -> popMode;
-LINE_STR_TEXT: ~[$\\\"\n\r]+;
-LINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR;
-LINE_STR_REF: INTERP_VAR;
-LINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(StringExpression);
-LINE_STR_NL: NL                           -> popMode, type(QUOTE_CLOSE);
+QUOTE_CLOSE: '"'                               -> popMode;
+LINE_STR_TEXT: ~["$\\\n\r]+                    -> type(STR_TEXT);
+LINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR_FRAG  -> type(STR_ESCAPED_CHAR);
+LINE_STR_REF: INTERP_VAR                       -> type(STR_REF);
+LINE_STR_EXPR_START: STR_EXPRESSION_START      -> pushMode(StringExpression), type(STR_EXPR_START);
+LINE_STR_NL: NLS                               -> popMode, type(QUOTE_CLOSE);
 
 mode MultiLineString;
-TRIPLE_QUOTE_CLOSE: MULTILINE_STR_QUOTE? '"""' -> popMode;
-MULTILINE_STR_TEXT: ~["$]+;
-MULTILINE_STR_QUOTE: '"'+;
-MULTILINE_STR_REF: INTERP_VAR;
-MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(StringExpression);
+TRIPLE_QUOTE_CLOSE: '"""'                      -> popMode;
+MULTILINE_STR_TEXT: ~["$]+                     -> type(STR_TEXT);
+MULTILINE_STR_QUOTE: '"' | '""';
+MULTILINE_STR_REF: INTERP_VAR                  -> type(STR_REF);
+MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(StringExpression), type(STR_EXPR_START);
 
 mode Inside;
 INSIDE_RPAREN: RPAREN                                           -> popMode, type(RPAREN);
@@ -349,7 +364,7 @@ INSIDE_DEFAULT: DEFAULT                                         -> type(DEFAULT)
 INSIDE_IDENTIFIER: IDENTIFIER                                   -> type(IDENTIFIER);
 
 mode StringExpression;
-STR_EXPR_LCURL: LCURLY                                            -> popMode;
+STR_EXPR_RCURL: RCURLY                                            -> popMode, type(STR_EXPR_END);
 STR_EXPR_LPAREN: LPAREN                                           -> pushMode(Inside), type(LPAREN);
 STR_EXPR_LSQUARE: LSQUARE                                         -> pushMode(Inside), type(LSQUARE);
 STR_EXPR_TRIPLE_QUOTE_OPEN: TRIPLE_QUOTE_OPEN                     -> pushMode(MultiLineString), type(TRIPLE_QUOTE_OPEN);

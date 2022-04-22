@@ -1,0 +1,10 @@
+module TestModule
+
+import {
+	{A} from Props
+	B
+	{C as D, E} from OtherModule
+	Props as P
+}
+
+export { A,	B as F }
