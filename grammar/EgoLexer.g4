@@ -3,11 +3,11 @@ lexer grammar EgoLexer;
 import UnicodeClasses;
 
 tokens {
-	STR_REF,
-	STR_EXPR_START,
-	STR_EXPR_END,
-	STR_ESCAPED_CHAR,
-	STR_TEXT
+  STR_REF,
+  STR_EXPR_START,
+  STR_EXPR_END,
+  STR_ESCAPED_CHAR,
+  STR_TEXT
 }
 
 fragment WS: [ \t\f\r\n]*;
@@ -79,7 +79,7 @@ T_MAT_2: 'mat2';
 T_MAT_3: 'mat3';
 T_MAT_4: 'mat4';
 T_REGEX: 'regex';
-T_VAL: 'val';
+T_VAR: 'var';
 
 /* Module */
 MODULE: 'module';
@@ -104,11 +104,9 @@ M_PRIVATE: 'private';
 M_INTERNAL: 'internal';
 M_VIRTUAL: 'virtual';
 M_OVERRIDE: 'override';
-M_INLINE: 'inline';
 M_ABSTRACT: 'abstract';
 M_STATIC: 'static';
-M_VAR: 'var';
-M_FINAL: 'final';
+M_CONST: 'const';
 M_VOLATILE: 'volatile';
 M_REF: 'ref';
 M_ASYNC: 'async';
@@ -251,16 +249,16 @@ SET: 'set';
 IDENTIFIER: [_a-zA-Z][_a-zA-Z0-9]*;
 
 mode LineString;
-QUOTE_CLOSE: '"'                               -> popMode;
-LINE_STR_TEXT: ~["$\\\n\r]+                    -> type(STR_TEXT);
-LINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR_FRAG  -> type(STR_ESCAPED_CHAR);
-LINE_STR_REF: INTERP_VAR                       -> type(STR_REF);
-LINE_STR_EXPR_START: STR_EXPRESSION_START      -> pushMode(StringExpression), type(STR_EXPR_START);
-LINE_STR_NL: NLS                               -> popMode, type(QUOTE_CLOSE);
+QUOTE_CLOSE: '"'                              -> popMode;
+LINE_STR_TEXT: ~["$\\\n\r]+                   -> type(STR_TEXT);
+LINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR_FRAG -> type(STR_ESCAPED_CHAR);
+LINE_STR_REF: INTERP_VAR                      -> type(STR_REF);
+LINE_STR_EXPR_START: STR_EXPRESSION_START     -> pushMode(StringExpression), type(STR_EXPR_START);
+LINE_STR_NL: NL                               -> popMode, type(QUOTE_CLOSE);
 
 mode MultiLineString;
-TRIPLE_QUOTE_CLOSE: '"""'                      -> popMode;
-MULTILINE_STR_TEXT: ~["$]+                     -> type(STR_TEXT);
+TRIPLE_QUOTE_CLOSE: '"""'  -> popMode;
+MULTILINE_STR_TEXT: ~["$]+ -> type(STR_TEXT);
 MULTILINE_STR_QUOTE: '"' | '""';
 MULTILINE_STR_REF: INTERP_VAR                  -> type(STR_REF);
 MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(StringExpression), type(STR_EXPR_START);

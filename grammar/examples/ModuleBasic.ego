@@ -7,4 +7,6 @@ import {
 	Props as P
 }
 
-export { A,	B as F }
+public module InternalModule {
+
+}

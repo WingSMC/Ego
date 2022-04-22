@@ -13,9 +13,4 @@ string fm = "$"
 string gm = """$"""
 string hm = """a"Hello""""
 string im = """"""""
-
-export {
-	a as "xyz"
-}
-
 string f = "a

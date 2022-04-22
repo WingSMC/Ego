@@ -1,18 +1,20 @@
+module Module
+
 import {
 	{ A } from Props
 }
 
-[InstanceOf]
-class B: A, C {
+// [InstanceOf]
+public class B: A, C {
 	public () {
 		A(10)
 	}
 
-	u32 prop {
-			get => prop
+	u32 Prop {
+			get => _prop
 			set {
 					print("prop set")
-					prop: value
+					_prop: value
 			}
 	}: 100
 
@@ -27,9 +29,4 @@ class B: A, C {
 		(@this).hello()
 		=> 0
 	}
-}
-
-export {
-	A
-	B as C
 }
