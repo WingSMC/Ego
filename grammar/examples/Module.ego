@@ -1,7 +1,12 @@
 module Module
 
 import {
-	{ A } from Props
+	Props { A }
+	STD {
+        Annotations {
+            InstanceOf
+        }
+    }
 }
 
 // [InstanceOf]

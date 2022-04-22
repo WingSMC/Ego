@@ -1,10 +1,17 @@
 module TestModule
 
 import {
-	{A} from Props
-	B
-	{C as D, E} from OtherModule
-	Props as P
+	Props as Props {A}
+	OtherModule {
+		C as D
+		E
+	}
+	B as _
+	STD {
+		Annotations {
+			InstanceOf
+		}
+	}
 }
 
 public module InternalModule {

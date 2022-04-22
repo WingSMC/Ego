@@ -4,30 +4,33 @@ options {
   tokenVocab = EgoLexer;
 }
 
-program: fileLevelModuleDecl EOF;
+program: fileLevelModuleDecl? EOF;
 nls: NL+;
 eos: nls | SEMI nls?;
 eoe: nls | COMMA nls?;
 lcurly: LCURLY nls?;
-rcurly: RCURLY eos?;
+rcurly: RCURLY nls?;
+lsquare: LSQUARE nls?;
+rsquare: RSQUARE nls?;
 lparen: LPAREN nls?;
 rparen: RPAREN nls?;
 
 /* Module */
-fileLevelModuleDecl: moduleName eos moduleBody;
-moduleDecl: modAccess moduleName nls? lcurly importList rcurly;
-moduleName: MODULE IDENTIFIER;
+fileLevelModuleDecl: MODULE IDENTIFIER eos moduleBody;
+moduleDecl: modAccess MODULE IDENTIFIER nls? lcurly moduleBody rcurly;
 moduleBody: importDecl? memberDecl*;
-importDecl: IMPORT nls? lcurly importList eos;
-importDestruct: lcurly importDestructList RCURLY;
+importDecl: IMPORT nls? lcurly importList rcurly;
 importList: (importItem eoe)* importItem? eoe?;
-importDestructList: (importDestructItem eoe)* importDestructItem?;
-importItem: (importDestruct FROM IDENTIFIER) | IDENTIFIER (AS IDENTIFIER)?;
-importDestructItem: IDENTIFIER (AS IDENTIFIER)?;
+importItem: IDENTIFIER (AS (IDENTIFIER | AR_MUL | DEFAULT))? destructObject? ;
 memberDecl: moduleDecl | fieldDecl | propertyDecl | functionDecl | classDecl; // TODO more types
 
 /* Variable */
 variableDecl: modField* typename IDENTIFIER /*(ASSIGN expr)?*/ eos;
+destructureObject: modField* T_VAR destructureObject ASSIGN /*expr*/ eos;
+destructObject: lcurly destructList rcurly;
+destructArray: lsquare destructList rsquare;
+destructList: (destructItem eoe)* destructItem?;
+destructItem: IDENTIFIER (AS IDENTIFIER)? (destructObject? | destructArray?);
 
 /* Field */
 fieldDecl: modAccess? variableDecl;
@@ -89,7 +92,7 @@ typename:
   | M_CONST
   | T_VOID
   | IDENTIFIER
-  | typename (AMP M_CONST?)?;
+  | typename (AMP M_CONST?)+;
 
 /* Modifiers */
 modAccess: M_PUBLIC | M_PROTECTED | M_PRIVATE | M_INTERNAL;
@@ -114,8 +117,8 @@ returnStmt: F_RETURN expr;
 */
 assignStmt: IDENTIFIER ASSIGN expr;
 expr: assignmentExpr;
-coalescingExpr: expr NULL_COALESCE <assoc = right> expr;
-assignmentExpr: IDENTIFIER opAssignment <assoc = right> expr;
+coalescingExpr: <assoc=right> expr NULL_COALESCE expr;
+assignmentExpr: <assoc=right> IDENTIFIER opAssignment expr;
 opAssignment:
   ASSIGN
   | ADD_ASSIGN
