@@ -39,7 +39,8 @@ exportItem: accessedStaticIdentifier (AS IDENTIFIER)?;
 moduleMemberDecl:
   annotation? (moduleDecl | classDecl | fieldDecl | propertyDecl); //  | functionDecl | classDecl; // TODO more types
 
-/* Variable */
+/* Variable and Fields */
+fieldDecl: modAccess? variableDecl; // BOOKMARK
 variableDecl: modField* typename IDENTIFIER (ASSIGN expr)? eos;
 
 destructureObject: modField* T_VAR destructObject ASSIGN expr eos; // BOOKMARK
@@ -52,9 +53,6 @@ destructArray: lsquare destructArrayList rsquare;
 destructArrayList: nls? (destructArrayItem eoe)* destructArrayItem? eoe?; // BOOKMARK
 destructArrayItem: IDENTIFIER (destructObject | destructArray)?;
 
-/* Field */
-fieldDecl: modAccess? variableDecl; // BOOKMARK
-
 /* Property */
 propertyDecl: modAccess? modProperty* typename IDENTIFIER nls? (ASSIGN expr)? nls? lcurly propertyBodyDecl RCURLY eos;
 propertyBodyDecl: propertyGetterDecl? propertySetterDecl?;
@@ -64,7 +62,7 @@ propertySetterDecl: SET blockStmt? eos?;
 /* Function */
 functionDecl: modAccess? modFunction* typename? IDENTIFIER functionAnonymDecl;
 functionAnonymDecl: lparen csParamDeclList? rparen functionBody;
-functionParam: modField typename IDENTIFIER;
+functionParam: modField? typename IDENTIFIER;
 functionBody: nls? (blockStmt | returnStmt eos);
 
 /* Class */
