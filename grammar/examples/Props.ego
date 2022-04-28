@@ -1,9 +1,9 @@
 module Props
 
 [InstanceOf, SomeOtherAnnotation]
-class A {
+class A: B {
   private (private u32 c)
-  public (private u32 a, i8 b) {
+  public (private u32 a, i8& b) {
     super(b)
     this(100 * a)
   }

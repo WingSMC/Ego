@@ -86,8 +86,7 @@ T_VAR: 'var';
 MODULE: 'module';
 IMPORT: 'import';
 EXPORT: 'export';
-FROM: 'from';
-// AS is also a cast operator
+AS: 'as';
 STRUCT_ALIAS: 'alias';
 STRUCT_ENUM: 'enum';
 STRUCT_INTERFACE: 'interface';
@@ -194,7 +193,6 @@ DELETE: 'delete';
 UNIQUE: 'unique';
 SHARED: 'shared';
 IS: 'is';
-AS: 'as';
 TYPEOF: 'typeof';
 /* Arithmetic */
 AR_ADD: '+';
