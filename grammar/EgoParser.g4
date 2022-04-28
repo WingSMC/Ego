@@ -4,7 +4,7 @@ options {
   tokenVocab = EgoLexer;
 }
 
-program: fileLevelModuleDecl? EOF;
+program: fileLevelModuleDecl;
 nls: NL+;
 eos: nls | SEMI nls?;
 eoe: nls | COMMA nls?;
@@ -15,38 +15,58 @@ rsquare: RSQUARE nls?;
 lparen: LPAREN nls?;
 rparen: RPAREN nls?;
 
+/* Identifiers, Access, and Namespacing */
+identifier: IDENTIFIER | THIS | SUPER | VALUE | FIELD;
+memberAccessOperators: DOT | SCOPE | ARROW | DOT_DEREF | ARROW_DEREF | NULL_COALESCE_MEMBER;
+accessedStaticIdentifier: IDENTIFIER (SCOPE IDENTIFIER)*;
+
+/* Annotations */
+annotation: lsquare (accessedStaticIdentifier eoe)* accessedStaticIdentifier? eoe? rsquare;
+
 /* Module */
-fileLevelModuleDecl: MODULE IDENTIFIER eos moduleBody;
-moduleDecl: modAccess MODULE IDENTIFIER nls? lcurly moduleBody rcurly;
-moduleBody: importDecl? memberDecl*;
-importDecl: IMPORT nls? lcurly importList rcurly;
+fileLevelModuleDecl: fileLevelModuleName moduleBody EOF;
+fileLevelModuleName: moduleName eos;
+moduleDecl: modAccess? moduleName nls? lcurly moduleBody rcurly;
+moduleName: MODULE IDENTIFIER;
+moduleBody: importDecl? moduleMemberDecl* exportDecl?;
+importDecl: IMPORT nls? importDestructure nls?;
+importDestructure: lcurly importList rcurly;
 importList: (importItem eoe)* importItem? eoe?;
-importItem: IDENTIFIER (AS (IDENTIFIER | AR_MUL | DEFAULT))? destructObject? ;
-memberDecl: moduleDecl | fieldDecl | propertyDecl | functionDecl | classDecl; // TODO more types
+importItem: accessedStaticIdentifier (AS (IDENTIFIER | DEFAULT))? importDestructure?;
+exportDecl: EXPORT nls? lcurly exportList rcurly;
+exportList: (exportItem eoe)* exportItem? eoe?;
+exportItem: accessedStaticIdentifier (AS IDENTIFIER)?;
+moduleMemberDecl:
+  annotation? (moduleDecl | classDecl | fieldDecl | propertyDecl); //  | functionDecl | classDecl; // TODO more types
 
 /* Variable */
-variableDecl: modField* typename IDENTIFIER /*(ASSIGN expr)?*/ eos;
-destructureObject: modField* T_VAR destructureObject ASSIGN /*expr*/ eos;
-destructObject: lcurly destructList rcurly;
-destructArray: lsquare destructList rsquare;
-destructList: (destructItem eoe)* destructItem?;
-destructItem: IDENTIFIER (AS IDENTIFIER)? (destructObject? | destructArray?);
+variableDecl: modField* typename IDENTIFIER (ASSIGN expr)? eos;
+
+destructureObject: modField* T_VAR destructObject ASSIGN expr eos;
+destructObject: lcurly destructObjectList rcurly;
+destructObjectList: nls? (destructObjectItem eoe)* destructObjectItem? eoe?;
+destructObjectItem: IDENTIFIER (AS IDENTIFIER | (destructObject | destructArray))?;
+
+destructureArray: modField* T_VAR destructArray ASSIGN expr eos;
+destructArray: lsquare destructArrayList rsquare;
+destructArrayList: nls? (destructArrayItem eoe)* destructArrayItem? eoe?;
+destructArrayItem: IDENTIFIER (destructObject | destructArray)?;
 
 /* Field */
 fieldDecl: modAccess? variableDecl;
 
 /* Property */
-propertyDecl: modAccess? modProperty* typename IDENTIFIER nls? lcurly propertyBodyDecl RCURLY /*(ASSIGN expr)?*/ eos;
-propertyBodyDecl: (propertyGetterDecl | propertySetterDecl)?;
-propertyGetterDecl: GET functionBody? eos;
-propertySetterDecl: SET functionBody? eos;
+propertyDecl: modAccess? modProperty* typename IDENTIFIER nls? (ASSIGN expr)? nls? lcurly propertyBodyDecl RCURLY eos;
+propertyBodyDecl: propertyGetterDecl? propertySetterDecl?;
+propertyGetterDecl: GET functionBody? eos?;
+propertySetterDecl: SET functionBody? eos?;
 
 /* Function */
 functionDecl: modAccess? modFunction? typename? IDENTIFIER functionParamList functionBody;
 functionAnonymDecl: functionParamList functionBody;
 functionParamList: lparen (functionParam (eoe functionParam)* eoe)? rparen;
 functionParam: typename IDENTIFIER;
-functionBody: (nls? lcurly /*seqStmt*/ rcurly) /*| returnStmt */;
+functionBody: (nls? lcurly seqStmt rcurly) | returnStmt eos;
 
 /* Constructor */
 // constructorDecl: modAccess? IDENTIFIER constructorParamList constructorBody;
@@ -54,17 +74,21 @@ functionBody: (nls? lcurly /*seqStmt*/ rcurly) /*| returnStmt */;
 /* Destructor */
 
 /* Class */
-classDecl:
-  modClass* STRUCT_CLASS IDENTIFIER nls? (ASSIGN nls? IDENTIFIER (eoe IDENTIFIER)*)? lcurly classBodyDecl nls? RCURLY nls?;
-classBodyDecl:;
+classDecl: modClass* STRUCT_CLASS IDENTIFIER (ASSIGN nls? IDENTIFIER (eoe IDENTIFIER)*)? lcurly classBodyDecl rcurly;
+classBodyDecl: (constructorDecl | moduleMemberDecl)*;
+constructorDecl: modAccess? constructorParamList functionBody?;
+constructorParamList: lparen ((constructorParam eoe)* constructorParam? eoe?) rparen;
+constructorParam: modAccess? functionParam;
 
 /* Types */
-string: singleLineString | multiLineString | pureString;
+literal: string | LIT_INT | LIT_DOUBLE | LIT_NULL | LIT_CHAR | boolean;
+string: pureString | singleLineString | multiLineString;
+boolean: LIT_TRUE | LIT_FALSE;
 singleLineString: QUOTE_OPEN stringContent* QUOTE_CLOSE;
 multiLineString: TRIPLE_QUOTE_OPEN stringContent* TRIPLE_QUOTE_CLOSE;
-pureString: QUOTE_OPEN STR_TEXT QUOTE_CLOSE;
+pureString: QUOTE_OPEN (STR_TEXT | STR_ESCAPED_CHAR)* QUOTE_CLOSE;
 stringContent: stringExpression | STR_REF | STR_TEXT | MULTILINE_STR_QUOTE | STR_ESCAPED_CHAR;
-stringExpression: STR_EXPR_START .*? STR_EXPR_END; // TODO implement
+stringExpression: STR_EXPR_START expr STR_EXPR_END;
 typename:
   T_BOOL
   | T_INT_8
@@ -101,24 +125,32 @@ modField: M_STATIC | M_CONST | M_VOLATILE;
 modProperty: M_STATIC | M_VOLATILE;
 modClass: M_VIRTUAL | M_ABSTRACT | M_CONST;
 
-
 /* Flow */
-/*
 seqStmt: stmt*;
-block: LCURLY seq RCURLY;
-stmt: block | whileStmt | doWhileStmt | forStmt | returnStmt;
+stmt:
+  blockStmt
+  | whileStmt
+  | doWhileStmt
+  | forStmt
+  | returnStmt
+  | asmStmt
+  | expr eos?; // | ifStmt | switchStmt | breakStmt | continueStmt;
+returnStmt: F_RETURN expr eos?;
+blockStmt: LCURLY seqStmt RCURLY;
 whileStmt: F_WHILE expr stmt;
 doWhileStmt: F_DO stmt F_WHILE expr;
 forStmt: F_FOR forHeaderStmt stmt;
-classBodyDeclStatement: memberDeclStatement | memberConstructorDecl;
-memberFieldDecl: typeQualifier? typename IDENTIFIER | typeQualifier? typename ASSIGN expr;
-forHeaderStmt:;
-returnStmt: F_RETURN expr;
-*/
-assignStmt: IDENTIFIER ASSIGN expr;
-expr: assignmentExpr;
-coalescingExpr: <assoc=right> expr NULL_COALESCE expr;
-assignmentExpr: <assoc=right> IDENTIFIER opAssignment expr;
+forHeaderStmt:; // TODO;
+asmStmt: ASM LCURLY ASM_CONTENT rcurly;
+expr:
+  literal
+  | identifier
+  | expr AS typename                             // cast
+  | <assoc = right> expr NULL_COALESCE expr      // coalesce
+  | <assoc = right> identifier opAssignment expr // opAssignment
+  | expr LPAREN (expr eoe)* expr? eoe? RPAREN    // functionCall
+  | LPAREN expr RPAREN                           // parenthesis
+  | expr AR_MUL expr                             ; // | exprList | exprParen | exprCall | exprMember | exprUnary | exprBinary | exprTernary | exprAssign | exprNew;
 opAssignment:
   ASSIGN
   | ADD_ASSIGN
