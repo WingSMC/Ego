@@ -1,37 +1,33 @@
 module Module
 
 import {
-	Props { A }
-	STD {
-        Annotations {
-            InstanceOf
-        }
-    }
+  Props { A }
+  STL::Annotations::InstanceOf as InstanceOf
 }
 
-// [InstanceOf]
+[InstanceOf]
 public class B: A, C {
-	public () {
-		A(10)
-	}
+  public () {
+    super(10)
+  }
 
-	u32 Prop {
-			get => _prop
-			set {
-					print("prop set")
-					_prop: value
-			}
-	}: 100
+  u32 Prop: 100 {
+      get => field
+      set {
+          print("prop set")
+          field: value
+      }
+  }
 
-	hello() {
-		print("Hello")
-	}
+  hello() {
+    print("Hello ${Prop::field}")
+  }
 
-	i32 main() {
-		hello()
-		this.hello()
-		this->hello()
-		(@this).hello()
-		=> 0
-	}
+  i32 main(List<string> args) {
+    hello()
+    this.hello()
+    this->hello()
+    (@this).hello()
+    => 0
+  }
 }

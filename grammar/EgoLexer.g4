@@ -41,6 +41,7 @@ fragment UNICODE_CHAR_LIT: BACKSLASH 'u' HEX_QUAD;
 
 PREPROCESSOR: '#' ~[\r\n]*   -> skip;
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
+LONE_BLOCK_COMMENT_END: '*/' -> skip;
 LINE_COMMENT: '//' ~[\r\n]*  -> skip;
 WHITESPACE: [ \t\f]          -> skip;
 NL: '\r'? '\n';
@@ -141,6 +142,7 @@ F_THROW: '=>>' | 'throw';
 F_TRICKLE: [~]+ '>' | 'trickle';
 F_GOTO: '->>' | 'goto';
 F_AWAIT: 'await';
+F_YIELD: 'yield';
 
 /************************* Operators *************************/
 SCOPE: '::';
@@ -179,12 +181,11 @@ AR_DECR: '--';
 BIT_NOT_NOT: '~~';
 LOG_NOT_NOT: '!!';
 
-/* Memory / Declaration / Access */
 ELLIPSIS: '...';
 RANGE: '..';
-ARROW_DEREF: '->@';
+ARROW_DEREF: '->' '@'+;
 ARROW: '->';
-DOT_DEREF: '.@';
+DOT_DEREF: '.' '@'+;
 AT: '@';
 DOT: '.';
 COMMA: ',';
@@ -242,11 +243,11 @@ EVENT: 'event';
 SUPER: 'super';
 THIS: 'this';
 VALUE: 'value';
-DEFAULT: '_';
+FIELD: 'field';
 GET: 'get';
 SET: 'set';
-
-IDENTIFIER: [_a-zA-Z][_a-zA-Z0-9]*;
+DEFAULT: '_' | 'default';
+IDENTIFIER: [a-zA-Z][_a-zA-Z0-9]* | '_' [_a-zA-Z0-9]+;
 
 mode LineString;
 QUOTE_CLOSE: '"'                              -> popMode;
@@ -254,14 +255,15 @@ LINE_STR_TEXT: ~["$\\\n\r]+                   -> type(STR_TEXT);
 LINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR_FRAG -> type(STR_ESCAPED_CHAR);
 LINE_STR_REF: INTERP_VAR                      -> type(STR_REF);
 LINE_STR_EXPR_START: STR_EXPRESSION_START     -> pushMode(StringExpression), type(STR_EXPR_START);
-LINE_STR_NL: NL                               -> popMode, type(QUOTE_CLOSE);
+LINE_STR_NL: NL                               -> popMode, type(NL);
 
 mode MultiLineString;
-TRIPLE_QUOTE_CLOSE: '"""'  -> popMode;
-MULTILINE_STR_TEXT: ~["$]+ -> type(STR_TEXT);
+TRIPLE_QUOTE_CLOSE: MULTILINE_STR_QUOTE? '"""'     -> popMode;
+MULTILINE_STR_TEXT: ~["$]+                         -> type(STR_TEXT);
+MULTILINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR_FRAG -> type(STR_ESCAPED_CHAR);
+MULTILINE_STR_REF: INTERP_VAR                      -> type(STR_REF);
+MULTILINE_STR_EXPR_START: STR_EXPRESSION_START     -> pushMode(StringExpression), type(STR_EXPR_START);
 MULTILINE_STR_QUOTE: '"' | '""';
-MULTILINE_STR_REF: INTERP_VAR                  -> type(STR_REF);
-MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(StringExpression), type(STR_EXPR_START);
 
 mode Inside;
 INSIDE_RPAREN: RPAREN                                           -> popMode, type(RPAREN);

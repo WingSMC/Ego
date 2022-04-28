@@ -1,22 +1,21 @@
 class A {
-	public (private u32 field)
-	u32 Prop1 {
-		get => field
-		set { field: value * 10 }
-	}
-	u32 Prop2 {
-		get => prop2
-		set {
-			print("prop set")
-			prop2: value
-		}
-	}
-	string Prop3 { get; set }
-	string Prop4 { get; set; }
-	string Prop5 {
-		get
-	}
-	string Prop6 {
-		set
-	}
+  u32 Prop1: 100 {
+    get => field
+    set { field: value * 10 }
+  }
+  u32 Prop2 {
+    get => field
+    set {
+      print("prop set")
+      field: value
+    }
+  }
+  string Prop3 { get; set }
+  string Prop4 { get; set; }
+  string Prop5 {
+    get
+  }
+  string Prop6 {
+    set
+  }
 }

@@ -1,16 +1,16 @@
-string a = "asd"
-string b = "$asd"
-string c = "${a}sd"
-string d = "$$"
-string e = "\\\n"
-string am = """asd"""
-string bm = """$asd"""
-string cm = """${a}sd"""
-string dm = """$$"""
-string em = """Hello,
+module Strings
+
+string a: "asd"
+string b: "$asd"
+string c: "${a}sd"
+string d: "\$$asd"
+string e: """asd"""
+string f: """$asd"""
+string g: """${a}sd"""
+string h: """"\$""""
+string i: """Hello,
 World!"""
-string fm = "$"
-string gm = """$"""
-string hm = """a"Hello""""
-string im = """"""""
-string f = "a
+string j: """a"Hello""""
+string k: """"""""
+string e1: "a
+string l

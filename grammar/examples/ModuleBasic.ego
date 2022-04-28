@@ -1,19 +1,37 @@
 module TestModule
 
 import {
-	Props as Props {A}
-	OtherModule {
-		C as D
-		E
-	}
-	B as _
-	STD {
-		Annotations {
-			InstanceOf
-		}
-	}
+  Props as Props {A}
+  B as _
+  OtherModule {
+    C as D
+    E::M as F {
+        G
+        N
+        O
+    }
+  }
+  STL::Annotations::InstanceOf as InstanceOf
 }
 
-public module InternalModule {
+public module PublicModule {
+    module InternalModule {
+        internal module ExplicitlyInternalModule {
+            import {
+                H
+            }
 
+            export {
+                H::I as J
+                H::K::P as L
+            }
+        }
+
+        export {
+            ExplicitlyInternalModule::J as J
+        }
+    }
+    export {
+        InternalModule::J as J
+    }
 }
