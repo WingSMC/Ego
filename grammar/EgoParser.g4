@@ -62,7 +62,7 @@ propertyGetterDecl: GET functionBody? eos?;
 propertySetterDecl: SET functionBody? eos?;
 
 /* Function */
-functionDecl: modAccess? modFunction? typename? IDENTIFIER functionParamList functionBody;
+functionDecl: modAccess? modFunction* typename? IDENTIFIER functionParamList functionBody;
 functionAnonymDecl: functionParamList functionBody;
 functionParamList: lparen (functionParam (eoe functionParam)* eoe)? rparen;
 functionParam: typename IDENTIFIER;
@@ -74,7 +74,7 @@ functionBody: (nls? lcurly seqStmt rcurly) | returnStmt eos;
 /* Destructor */
 
 /* Class */
-classDecl: modClass* STRUCT_CLASS IDENTIFIER (ASSIGN nls? IDENTIFIER (eoe IDENTIFIER)*)? lcurly classBodyDecl rcurly;
+classDecl: modAccess? modClass* STRUCT_CLASS IDENTIFIER (ASSIGN nls? IDENTIFIER (eoe IDENTIFIER)*)? lcurly classBodyDecl rcurly;
 classBodyDecl: (constructorDecl | moduleMemberDecl)*;
 constructorDecl: modAccess? constructorParamList functionBody?;
 constructorParamList: lparen ((constructorParam eoe)* constructorParam? eoe?) rparen;
