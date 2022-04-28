@@ -17,7 +17,7 @@ rparen: RPAREN nls?;
 
 /* Identifiers, Access, and Namespacing */
 identifier: IDENTIFIER | THIS | SUPER | VALUE | FIELD;
-memberAccessOperators: DOT | SCOPE | ARROW | DOT_DEREF | ARROW_DEREF | NULL_COALESCE_MEMBER;
+memberAccessOperators: DOT | SCOPE | ARROW | DOT_DEREF | ARROW_DEREF | NULL_COALESCE_MEMBER; // BOOKMARK
 accessedStaticIdentifier: IDENTIFIER (SCOPE IDENTIFIER)*;
 
 /* Annotations */
@@ -30,11 +30,11 @@ moduleDecl: modAccess? moduleName nls? lcurly moduleBody rcurly;
 moduleName: MODULE IDENTIFIER;
 moduleBody: importDecl? moduleMemberDecl* exportDecl?;
 importDecl: IMPORT nls? importDestructure nls?;
-importDestructure: lcurly importList rcurly;
-importList: (importItem eoe)* importItem? eoe?;
+importDestructure: lcurly importList rcurly; // BOOKMARK
+importList: (importItem eoe)* importItem? eoe?; // BOOKMARK
 importItem: accessedStaticIdentifier (AS (IDENTIFIER | DEFAULT))? importDestructure?;
 exportDecl: EXPORT nls? lcurly exportList rcurly;
-exportList: (exportItem eoe)* exportItem? eoe?;
+exportList: (exportItem eoe)* exportItem? eoe?; // BOOKMARK
 exportItem: accessedStaticIdentifier (AS IDENTIFIER)?;
 moduleMemberDecl:
   annotation? (moduleDecl | classDecl | fieldDecl | propertyDecl); //  | functionDecl | classDecl; // TODO more types
@@ -42,18 +42,18 @@ moduleMemberDecl:
 /* Variable */
 variableDecl: modField* typename IDENTIFIER (ASSIGN expr)? eos;
 
-destructureObject: modField* T_VAR destructObject ASSIGN expr eos;
+destructureObject: modField* T_VAR destructObject ASSIGN expr eos; // BOOKMARK
 destructObject: lcurly destructObjectList rcurly;
-destructObjectList: nls? (destructObjectItem eoe)* destructObjectItem? eoe?;
+destructObjectList: nls? (destructObjectItem eoe)* destructObjectItem? eoe?; // BOOKMARK
 destructObjectItem: IDENTIFIER (AS IDENTIFIER | (destructObject | destructArray))?;
 
-destructureArray: modField* T_VAR destructArray ASSIGN expr eos;
+destructureArray: modField* T_VAR destructArray ASSIGN expr eos; // BOOKMARK
 destructArray: lsquare destructArrayList rsquare;
-destructArrayList: nls? (destructArrayItem eoe)* destructArrayItem? eoe?;
+destructArrayList: nls? (destructArrayItem eoe)* destructArrayItem? eoe?; // BOOKMARK
 destructArrayItem: IDENTIFIER (destructObject | destructArray)?;
 
 /* Field */
-fieldDecl: modAccess? variableDecl;
+fieldDecl: modAccess? variableDecl; // BOOKMARK
 
 /* Property */
 propertyDecl: modAccess? modProperty* typename IDENTIFIER nls? (ASSIGN expr)? nls? lcurly propertyBodyDecl RCURLY eos;
@@ -62,9 +62,9 @@ propertyGetterDecl: GET functionBody? eos?;
 propertySetterDecl: SET functionBody? eos?;
 
 /* Function */
-functionDecl: modAccess? modFunction* typename? IDENTIFIER functionParamList functionBody;
-functionAnonymDecl: functionParamList functionBody;
-functionParamList: lparen (functionParam (eoe functionParam)* eoe)? rparen;
+functionDecl: modAccess? modFunction* typename? IDENTIFIER functionParamList functionBody; // BOOKMARK
+functionAnonymDecl: functionParamList functionBody; // BOOKMARK
+functionParamList: lparen (functionParam (eoe functionParam)* eoe)? rparen; // BOOKMARK
 functionParam: typename IDENTIFIER;
 functionBody: (nls? lcurly seqStmt rcurly) | returnStmt eos;
 
@@ -77,7 +77,7 @@ functionBody: (nls? lcurly seqStmt rcurly) | returnStmt eos;
 classDecl: modAccess? modClass* STRUCT_CLASS IDENTIFIER (ASSIGN nls? IDENTIFIER (eoe IDENTIFIER)*)? lcurly classBodyDecl rcurly;
 classBodyDecl: (constructorDecl | moduleMemberDecl)*;
 constructorDecl: modAccess? constructorParamList functionBody?;
-constructorParamList: lparen ((constructorParam eoe)* constructorParam? eoe?) rparen;
+constructorParamList: lparen ((constructorParam eoe)* constructorParam? eoe?) rparen; // BOOKMARK
 constructorParam: modAccess? functionParam;
 
 /* Types */
@@ -148,7 +148,7 @@ expr:
   | expr AS typename                             // cast
   | <assoc = right> expr NULL_COALESCE expr      // coalesce
   | <assoc = right> identifier opAssignment expr // opAssignment
-  | expr LPAREN (expr eoe)* expr? eoe? RPAREN    // functionCall
+  | expr LPAREN (expr eoe)* expr? eoe? RPAREN    // functionCall BOOKMARK
   | LPAREN expr RPAREN                           // parenthesis
   | expr AR_MUL expr                             ; // | exprList | exprParen | exprCall | exprMember | exprUnary | exprBinary | exprTernary | exprAssign | exprNew;
 opAssignment:
