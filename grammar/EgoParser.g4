@@ -62,23 +62,22 @@ propertyGetterDecl: GET functionBody? eos?;
 propertySetterDecl: SET functionBody? eos?;
 
 /* Function */
-functionDecl: modAccess? modFunction? typename? IDENTIFIER functionParamList functionBody;
-functionAnonymDecl: functionParamList functionBody;
-functionParamList: lparen (functionParam (eoe functionParam)* eoe)? rparen;
-functionParam: typename IDENTIFIER;
-functionBody: (nls? lcurly seqStmt rcurly) | returnStmt eos;
-
-/* Constructor */
-// constructorDecl: modAccess? IDENTIFIER constructorParamList constructorBody;
-
-/* Destructor */
+functionDecl: modAccess? modFunction? typename? IDENTIFIER functionAnonymDecl;
+functionAnonymDecl: lparen csParamDeclList? rparen functionBody;
+functionParam: modField typename IDENTIFIER;
+functionBody: nls? (blockStmt | returnStmt eos);
 
 /* Class */
-classDecl: modClass* STRUCT_CLASS IDENTIFIER (ASSIGN nls? IDENTIFIER (eoe IDENTIFIER)*)? lcurly classBodyDecl rcurly;
+classDecl: modClass* STRUCT_CLASS IDENTIFIER (ASSIGN nls? csIdentifier)? lcurly classBodyDecl rcurly;
 classBodyDecl: (constructorDecl | moduleMemberDecl)*;
-constructorDecl: modAccess? constructorParamList functionBody?;
-constructorParamList: lparen ((constructorParam eoe)* constructorParam? eoe?) rparen;
+constructorDecl: modAccess? lparen constructorParamList rparen functionBody?;
 constructorParam: modAccess? functionParam;
+destructorDecl: BIT_NOT functionBody | M_VIRTUAL BIT_NOT functionBody?;
+
+/* Comma separated lists */
+constructorParamList: (constructorParam eoe)* constructorParam? eoe?;
+csIdentifier: IDENTIFIER (eoe IDENTIFIER)* eoe?;
+csParamDeclList: functionParam (eoe functionParam)* eoe?;
 
 /* Types */
 literal: string | LIT_INT | LIT_DOUBLE | LIT_NULL | LIT_CHAR | boolean;
@@ -116,12 +115,13 @@ typename:
   | M_CONST
   | T_VOID
   | IDENTIFIER
-  | typename (AMP M_CONST?)+;
+  | typename (M_CONST? AMP)+;
 
 /* Modifiers */
 modAccess: M_PUBLIC | M_PROTECTED | M_PRIVATE | M_INTERNAL;
 modFunction: M_ABSTRACT | M_STATIC | M_VIRTUAL | M_OVERRIDE;
 modField: M_STATIC | M_CONST | M_VOLATILE;
+modParam: M_CONST;
 modProperty: M_STATIC | M_VOLATILE;
 modClass: M_VIRTUAL | M_ABSTRACT | M_CONST;
 
@@ -136,7 +136,7 @@ stmt:
   | asmStmt
   | expr eos?; // | ifStmt | switchStmt | breakStmt | continueStmt;
 returnStmt: F_RETURN expr eos?;
-blockStmt: LCURLY seqStmt RCURLY;
+blockStmt: lcurly seqStmt rcurly;
 whileStmt: F_WHILE expr stmt;
 doWhileStmt: F_DO stmt F_WHILE expr;
 forStmt: F_FOR forHeaderStmt stmt;
@@ -150,7 +150,7 @@ expr:
   | <assoc = right> identifier opAssignment expr // opAssignment
   | expr LPAREN (expr eoe)* expr? eoe? RPAREN    // functionCall
   | LPAREN expr RPAREN                           // parenthesis
-  | expr AR_MUL expr                             ; // | exprList | exprParen | exprCall | exprMember | exprUnary | exprBinary | exprTernary | exprAssign | exprNew;
+  | expr AR_MUL expr;                            // | exprList | exprParen | exprCall | exprMember | exprUnary | exprBinary | exprTernary | exprAssign | exprNew;
 opAssignment:
   ASSIGN
   | ADD_ASSIGN
