@@ -17,11 +17,10 @@ rparen: RPAREN nls?;
 
 /* Identifiers, Access, and Namespacing */
 identifier: IDENTIFIER | THIS | SUPER | VALUE | FIELD;
-memberAccessOperators: DOT | SCOPE | ARROW | DOT_DEREF | ARROW_DEREF | NULL_COALESCE_MEMBER; // BOOKMARK
-accessedStaticIdentifier: IDENTIFIER (SCOPE IDENTIFIER)*;
+accessedStaticIdentifier: (IDENTIFIER SCOPE)* IDENTIFIER;
 
 /* Annotations */
-annotation: lsquare (accessedStaticIdentifier eoe)* accessedStaticIdentifier? eoe? rsquare;
+annotation: lsquare csStaticIdentifier rsquare;
 
 /* Module */
 fileLevelModuleDecl: fileLevelModuleName moduleBody EOF;
@@ -29,12 +28,9 @@ fileLevelModuleName: moduleName eos;
 moduleDecl: modAccess? moduleName nls? lcurly moduleBody rcurly;
 moduleName: MODULE IDENTIFIER;
 moduleBody: importDecl? moduleMemberDecl* exportDecl?;
-importDecl: IMPORT nls? importDestructure nls?;
-importDestructure: lcurly importList rcurly;    // BOOKMARK
-importList: (importItem eoe)* importItem? eoe?; // BOOKMARK
+importDecl: IMPORT nls? importDestructure;
 importItem: accessedStaticIdentifier (AS (IDENTIFIER | DEFAULT))? importDestructure?;
-exportDecl: EXPORT nls? lcurly exportList rcurly;
-exportList: (exportItem eoe)* exportItem? eoe?; // BOOKMARK
+exportDecl: EXPORT nls? exportStructure;
 exportItem: accessedStaticIdentifier (AS IDENTIFIER)?;
 moduleMemberDecl:
   annotation? (moduleDecl | classDecl | fieldDecl | propertyDecl); //  | functionDecl | classDecl; // TODO more types
@@ -54,40 +50,49 @@ destructArrayList: nls? (destructArrayItem eoe)* destructArrayItem? eoe?; // BOO
 destructArrayItem: IDENTIFIER (destructObject | destructArray)?;
 
 /* Property */
-propertyDecl: modAccess? modProperty* typename IDENTIFIER nls? (ASSIGN expr)? nls? lcurly propertyBodyDecl RCURLY eos;
-propertyBodyDecl: propertyGetterDecl? propertySetterDecl?;
-propertyGetterDecl: GET blockStmt? eos?;
+propertyDecl:
+  modAccess? modProperty* typename IDENTIFIER (nls? ASSIGN nls? expr)? nls? lcurly propertyGetterDecl? propertySetterDecl? rcurly;
+propertyGetterDecl: GET functionBody? eos?;
 propertySetterDecl: SET blockStmt? eos?;
 
 /* Function */
 functionDecl: modAccess? modFunction* typename? IDENTIFIER functionAnonymDecl;
-functionAnonymDecl: lparen csParamDeclList? rparen functionBody;
+functionAnonymDecl: functionParams functionBody;
 functionParam: modField? typename IDENTIFIER;
 functionBody: nls? (blockStmt | returnStmt eos);
 
 /* Class */
-classDecl: modClass* STRUCT_CLASS IDENTIFIER (ASSIGN nls? csIdentifier)? lcurly classBodyDecl rcurly;
+classDecl: modClass* STRUCT_CLASS IDENTIFIER classInheritance? classStructure;
+classInheritance: ASSIGN nls? csStaticIdentifier;
 classBodyDecl: (constructorDecl | moduleMemberDecl)*;
-constructorDecl: modAccess? lparen constructorParamList rparen functionBody?;
+constructorDecl: modAccess? lparen csConstructorParamList rparen functionBody?;
 constructorParam: modAccess? functionParam;
 destructorDecl: BIT_NOT functionBody | M_VIRTUAL BIT_NOT functionBody?;
 
-/* Comma separated lists */
-constructorParamList: (constructorParam eoe)* constructorParam? eoe?;
-csIdentifier: IDENTIFIER (eoe IDENTIFIER)* eoe?;
-csParamDeclList: functionParam (eoe functionParam)* eoe?;
+/* Comma separated lists and blocks */
+importDestructure: lcurly importList rcurly;
+exportStructure: lcurly exportList rcurly;
+classStructure: lcurly classBodyDecl rcurly;
+functionParams: lparen csFuncParamList rparen;
+
+importList: (importItem eoe)* importItem? eoe?;
+exportList: (exportItem eoe)* exportItem? eoe?;
+csStaticIdentifier: (accessedStaticIdentifier eoe)* accessedStaticIdentifier? eoe?;
+csConstructorParamList: (constructorParam eoe)* constructorParam? eoe?;
+csFuncParamList: (functionParam eoe)* functionParam? eoe?;
 
 /* Types */
-literal: string | LIT_INT | LIT_DOUBLE | LIT_NULL | LIT_CHAR | boolean;
+literal: string | LIT_INT | LIT_DOUBLE | LIT_NULL | LIT_CHAR | bool;
 string: pureString | singleLineString | multiLineString;
-boolean: LIT_TRUE | LIT_FALSE;
+bool: LIT_TRUE | LIT_FALSE;
 singleLineString: QUOTE_OPEN stringContent* QUOTE_CLOSE;
 multiLineString: TRIPLE_QUOTE_OPEN stringContent* TRIPLE_QUOTE_CLOSE;
 pureString: QUOTE_OPEN (STR_TEXT | STR_ESCAPED_CHAR)* QUOTE_CLOSE;
 stringContent: stringExpression | STR_REF | STR_TEXT | MULTILINE_STR_QUOTE | STR_ESCAPED_CHAR;
 stringExpression: STR_EXPR_START expr STR_EXPR_END;
 typename:
-  T_BOOL
+  T_VOID
+  | T_BOOL
   | T_INT_8
   | T_INT_16
   | T_INT_32
@@ -111,7 +116,6 @@ typename:
   | T_STRING
   | T_VAR
   | M_CONST
-  | T_VOID
   | IDENTIFIER
   | typename (M_CONST? AMP)+;
 
@@ -136,7 +140,7 @@ stmt:
 returnStmt: F_RETURN expr eos?;
 blockStmt: lcurly seqStmt rcurly;
 whileStmt: F_WHILE expr stmt;
-doWhileStmt: F_DO stmt F_WHILE expr;
+doWhileStmt: F_DO stmt F_WHILE expr eos;
 forStmt: F_FOR forHeaderStmt stmt;
 forHeaderStmt:; // TODO;
 asmStmt: ASM LCURLY ASM_CONTENT rcurly;
@@ -179,3 +183,6 @@ opAssignment:
   | ARROW_ASSIGN
   | DOT_DEREF_ASSIGN;
 unaryAssignments: AR_INCR | AR_DECR | BIT_NOT_NOT | LOG_NOT_NOT;
+opMemberAccess: DOT | SCOPE | ARROW | DOT_DEREF | ARROW_DEREF | NULL_COALESCE_MEMBER;
+opL1: AR_MUL | AR_DIV | AR_MOD;
+opL2: AR_ADD | AR_MUL;

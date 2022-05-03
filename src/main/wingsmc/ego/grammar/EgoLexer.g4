@@ -2,6 +2,10 @@ lexer grammar EgoLexer;
 
 import UnicodeClasses;
 
+channels {
+  DOCUMENTATION
+}
+
 tokens {
   STR_REF,
   STR_EXPR_START,
@@ -40,6 +44,7 @@ fragment BIN_NUMBER: '0' [bB] BIN_DIGIT+;
 fragment UNICODE_CHAR_LIT: BACKSLASH 'u' HEX_QUAD;
 
 PREPROCESSOR: '#' ~[\r\n]*   -> skip;
+DOC_COMMENT: '/**' .*? '*/'  -> channel(DOCUMENTATION);
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 LONE_BLOCK_COMMENT_END: '*/' -> skip;
 LINE_COMMENT: '//' ~[\r\n]*  -> skip;
