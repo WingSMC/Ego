@@ -16,14 +16,14 @@ lparen: LPAREN nls?;
 rparen: RPAREN nls?;
 
 /* Identifiers, Access, and Namespacing */
-identifier: IDENTIFIER | THIS | SUPER | VALUE | FIELD;
+identifier: IDENTIFIER | THIS | SUPER | VALUE | FIELD | GLOBAL;
 accessedStaticIdentifier: (IDENTIFIER SCOPE)* IDENTIFIER;
 
 /* Annotations */
 annotation: lsquare csStaticIdentifier rsquare;
 
 /* Module */
-fileLevelModuleDecl: fileLevelModuleName moduleBody EOF;
+fileLevelModuleDecl: fileLevelModuleName? moduleBody EOF;
 fileLevelModuleName: moduleName eos;
 moduleDecl: modAccess? moduleName nls? lcurly moduleBody rcurly;
 moduleName: MODULE IDENTIFIER;
@@ -52,8 +52,8 @@ destructArrayItem: IDENTIFIER (destructObject | destructArray)?;
 /* Property */
 propertyDecl:
   modAccess? modProperty* typename IDENTIFIER (nls? ASSIGN nls? expr)? nls? lcurly propertyGetterDecl? propertySetterDecl? rcurly;
-propertyGetterDecl: GET functionBody? eos?;
-propertySetterDecl: SET blockStmt? eos?;
+propertyGetterDecl: annotation? GET (functionBody | eos)?;
+propertySetterDecl: annotation? SET (blockStmt | eos)?;
 
 /* Function */
 functionDecl: modAccess? modFunction* typename? IDENTIFIER functionAnonymDecl;
@@ -74,6 +74,7 @@ importDestructure: lcurly importList rcurly;
 exportStructure: lcurly exportList rcurly;
 classStructure: lcurly classBodyDecl rcurly;
 functionParams: lparen csFuncParamList rparen;
+blockStmt: lcurly seqStmt rcurly;
 
 importList: (importItem eoe)* importItem? eoe?;
 exportList: (exportItem eoe)* exportItem? eoe?;
@@ -138,7 +139,6 @@ stmt:
   | asmStmt
   | expr eos?; // | ifStmt | switchStmt | breakStmt | continueStmt;
 returnStmt: F_RETURN expr eos?;
-blockStmt: lcurly seqStmt rcurly;
 whileStmt: F_WHILE expr stmt;
 doWhileStmt: F_DO stmt F_WHILE expr eos;
 forStmt: F_FOR forHeaderStmt stmt;
@@ -186,3 +186,13 @@ unaryAssignments: AR_INCR | AR_DECR | BIT_NOT_NOT | LOG_NOT_NOT;
 opMemberAccess: DOT | SCOPE | ARROW | DOT_DEREF | ARROW_DEREF | NULL_COALESCE_MEMBER;
 opL1: AR_MUL | AR_DIV | AR_MOD;
 opL2: AR_ADD | AR_MUL;
+
+// TODO
+// ops
+// for
+// switch
+// branch
+// generic
+// arrays
+// operator overloading
+// ref
