@@ -197,8 +197,6 @@ NEW: 'new';
 DELETE: 'delete';
 UNIQUE: 'unique';
 SHARED: 'shared';
-IS: 'is';
-TYPEOF: 'typeof';
 /* Arithmetic */
 AR_ADD: '+';
 AR_SUB: '-';
@@ -235,12 +233,17 @@ BIT_XOR: '^';
 BIT_XNOR: '~^';
 BIT_NOT: '~';
 /* Other */
+IS: 'is';
+IS_NOT: '!is';
 NULL_COALESCE: '??';
 NULL_COALESCE_MEMBER: '?.';
 NULL_IS_NULL: '?';
 
 /* Other keywords */
 ASM: 'asm' -> pushMode(Asm);
+SIZEOF: 'sizeof';
+TYPEOF: 'typeof';
+GLOBAL: 'global';
 THREAD: 'thread';
 EVENT: 'event';
 SUPER: 'super';
