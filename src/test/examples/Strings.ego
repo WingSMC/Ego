@@ -12,5 +12,4 @@ string i: """Hello,
 World!"""
 string j: """a"Hello""""
 string k: """"""""
-string e1: "a
 string l

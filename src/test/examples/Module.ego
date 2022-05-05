@@ -6,7 +6,7 @@ import {
 }
 
 [InstanceOf]
-public class B: A, C {
+public class B<K is Interfaces::Hash,V> is A<V>, C<K> {
   public () {
     super(10)
   }
@@ -23,11 +23,15 @@ public class B: A, C {
     print("Hello ${Prop::field}")
   }
 
-  i32 main(List<string> args) {
+  i32 main(List<?> args) {
     hello()
     this.hello()
     this->hello()
     (@this).hello()
     => 0
+  }
+
+  virtual ~ {
+    print("~B")
   }
 }
