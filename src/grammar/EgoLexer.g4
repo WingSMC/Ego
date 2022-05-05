@@ -1,7 +1,5 @@
 lexer grammar EgoLexer;
 
-import UnicodeClasses;
-
 channels {
   DOCUMENTATION
 }
@@ -9,7 +7,6 @@ channels {
 tokens {
   STR_REF,
   STR_EXPR_START,
-  STR_EXPR_END,
   STR_ESCAPED_CHAR,
   STR_TEXT
 }
@@ -33,8 +30,8 @@ fragment INTERP: '$';
 fragment INTERP_VAR: INTERP IDENTIFIER;
 fragment STR_ESACAPED_CHAR_FRAG: BACKSLASH . | UNICODE_CHAR_LIT;
 fragment STR_EXPRESSION_START: INTERP LCURLY;
-fragment DEC_DIGIT_NOZERO: UNICODE_CLASS_ND_NOZEROS;
-fragment DEC_DIGIT: UNICODE_CLASS_ND;
+fragment DEC_DIGIT_NOZERO: [1-9];
+fragment DEC_DIGIT: [0-9];
 fragment DEC_NUMBER: DEC_DIGIT_NOZERO DEC_DIGIT*;
 fragment HEX_DIGIT: [0-9a-fA-F];
 fragment HEX_QUAD: HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
@@ -116,7 +113,7 @@ M_REF: 'ref';
 M_ASYNC: 'async';
 
 /* Literals */
-LIT_INT: DEC_NUMBER | HEX_NUMBER | BIN_NUMBER;
+LIT_INT: '-'? (DEC_NUMBER | HEX_NUMBER | BIN_NUMBER | '0');
 LIT_DOUBLE: ([1-9][0-9]* | '0')? '.' [0-9]+ ('e' [1-9][0-9]*)?;
 LIT_NULL: 'null';
 LIT_TRUE: 'true';
