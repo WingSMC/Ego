@@ -125,6 +125,9 @@ QUOTE_OPEN: '"'          -> pushMode(LineString);
 /* Flow */
 F_WHILE: 'while';
 F_FOR: 'for';
+IN: 'in';
+OF: 'of';
+STEP: 'step';
 F_DO: 'do';
 F_IF: 'if';
 F_ELIF: 'elif';
