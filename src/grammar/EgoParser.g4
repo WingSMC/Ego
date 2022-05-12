@@ -302,22 +302,3 @@ typename:
   | typename AT
   | accessedStaticIdentifier
   | typename (LSQUARE RSQUARE)+;
-
-// TODO
-// operator overloading
-// switch case & if ranges
-// array init ranges
-// events
-// thread / corutine
-// exception declarations
-// annotation declaration
-// record declaration
-// enum declaration
-// object declaration
-// interface declaration
-
-//? TEST
-// $$ in string
-
-
-//* NO POST UNARY
