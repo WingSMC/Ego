@@ -1,10 +1,12 @@
 lexer grammar EgoLexer;
 
 channels {
+  PREPROCESSOR,
   DOCUMENTATION
 }
 
 tokens {
+  STR_DOLLAR,
   STR_REF,
   STR_EXPR_START,
   STR_ESCAPED_CHAR,
@@ -15,6 +17,7 @@ fragment WS: [ \t\f\r\n]*;
 fragment BACKSLASH: '\\';
 fragment ESCAPE_SEQ:
   BACKSLASH BACKSLASH
+  | BACKSLASH '0'
   | BACKSLASH '\''
   | BACKSLASH '"'
   | BACKSLASH '?'
@@ -40,7 +43,7 @@ fragment BIN_DIGIT: [0-1];
 fragment BIN_NUMBER: '0' [bB] BIN_DIGIT+;
 fragment UNICODE_CHAR_LIT: BACKSLASH 'u' HEX_QUAD;
 
-PREPROCESSOR: '#' ~[\r\n]*   -> skip;
+PREPROC: '<%' .*? '%>'       -> channel(PREPROCESSOR);
 DOC_COMMENT: '/**' .*? '*/'  -> channel(DOCUMENTATION);
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 LONE_BLOCK_COMMENT_END: '*/' -> skip;
@@ -109,18 +112,17 @@ M_ABSTRACT: 'abstract';
 M_STATIC: 'static';
 M_CONST: 'const';
 M_VOLATILE: 'volatile';
-M_REF: 'ref';
 M_ASYNC: 'async';
 
 /* Literals */
-LIT_INT: '-'? (DEC_NUMBER | HEX_NUMBER | BIN_NUMBER | '0');
+LIT_INT: (DEC_NUMBER | HEX_NUMBER | BIN_NUMBER | '0');
 LIT_DOUBLE: ([1-9][0-9]* | '0')? '.' [0-9]+ ('e' [1-9][0-9]*)?;
 LIT_NULL: 'null';
 LIT_TRUE: 'true';
 LIT_FALSE: 'false';
 LIT_CHAR: '\'' (. | UNICODE_CHAR_LIT | ESCAPE_SEQ) '\'';
-TRIPLE_QUOTE_OPEN: '"""' -> pushMode(MultiLineString);
-QUOTE_OPEN: '"'          -> pushMode(LineString);
+BACKTICK_OPEN: IDENTIFIER? (AT | HASH | INTERP)* '`' -> pushMode(MultiLineString);
+QUOTE_OPEN: '"'                                      -> pushMode(LineString);
 
 /* Flow */
 F_WHILE: 'while';
@@ -130,19 +132,17 @@ OF: 'of';
 STEP: 'step';
 F_DO: 'do';
 F_IF: 'if';
-F_ELIF: 'elif';
 F_ELSE: 'else';
+F_SWITCH: 'switch';
 F_TRY: 'try';
 F_CATCH: 'catch';
 F_FINALLY: 'finally';
-F_WHEN: 'when';
-F_LABEL: 'label';
 F_BREAK: '<|' | 'break';
 F_CONTINUE: '|>' | 'continue';
 F_RETURN: '=>' | 'ret' | 'return';
 F_EVAL: '=' | 'eval';
 F_THROW: '=>>' | 'throw';
-F_TRICKLE: [~]+ '>' | 'trickle';
+F_TRICKLE: '~>' | 'trickle';
 F_GOTO: '->>' | 'goto';
 F_AWAIT: 'await';
 F_YIELD: 'yield';
@@ -150,46 +150,47 @@ F_YIELD: 'yield';
 /************************* Operators *************************/
 SCOPE: '::';
 /* Assignments */
-ADD_ASSIGN: '+:';
-SUB_ASSIGN: '-:';
-EXP_ASSIGN: '**:';
-MUL_ASSIGN: '*:';
-DIV_ASSIGN: '/:';
-MOD_ASSIGN: '%:';
-ROT_L_ASSIGN: '<=<:';
-ROT_R_ASSIGN: '>=>:';
-SH_L_S_ASSIGN: '<<<:';
-SH_R_S_ASSIGN: '>>>:';
-SH_L_ASSIGN: '<<:';
-SH_R_ASSIGN: '>>:';
-GT_ASSIGN: '<:';
-LT_ASSIGN: '>:';
-LOG_AND_ASSIGN: '&&:' | 'and:';
-LOG_OR_ASSIGN: '||:' | 'or:';
-LOG_XOR_ASSIGN: '^^:' | 'xor:';
-BIT_AND_ASSIGN: '&:';
-BIT_OR_ASSIGN: '|:';
-BIT_XOR_ASSIGN: '^:';
-NULL_COALESCE_ASSIGN: '??:'; // Assign if lvalue is null
-NULL_NON_NULL_ASSIGN: '?:';  // Assign if rvalue is not null
-NULL_COALESCE_MEMBER_ASSIGN: '?.:';
-DOT_ASSIGN: '.:';
-ARROW_DEREF_ASSIGN: '->@:';
-ARROW_ASSIGN: '->:';
-DOT_DEREF_ASSIGN: '.@:';
+ADD_ASSIGN: ADD ASSIGN;
+SUB_ASSIGN: SUB ASSIGN;
+EXP_ASSIGN: EXP ASSIGN;
+MUL_ASSIGN: MUL ASSIGN;
+DIV_ASSIGN: DIV ASSIGN;
+MOD_ASSIGN: MOD ASSIGN;
+ROT_L_ASSIGN: ROT_L ASSIGN;
+ROT_R_ASSIGN: ROT_R ASSIGN;
+SH_L_S_ASSIGN: SH_LS ASSIGN;
+SH_R_S_ASSIGN: SH_RS ASSIGN;
+SH_L_ASSIGN: SH_L ASSIGN;
+SH_R_ASSIGN: SH_R ASSIGN;
+GT_ASSIGN: GT ASSIGN;
+LT_ASSIGN: LT ASSIGN;
+NEQ_ASSIGN: NEQ ASSIGN;
+LOG_AND_ASSIGN: LOG_AND ASSIGN;
+LOG_OR_ASSIGN: LOG_OR ASSIGN;
+LOG_XOR_ASSIGN: LOG_XOR ASSIGN;
+BIT_AND_ASSIGN: BIT_AND ASSIGN;
+BIT_OR_ASSIGN: BIT_OR ASSIGN;
+BIT_XOR_ASSIGN: BIT_XOR ASSIGN;
+COALESCE_ASSIGN: COALESCE ASSIGN; // Assign if lvalue is null
+NON_NULL_ASSIGN: IS_NULL ASSIGN;  // Assign if rvalue is not null
+COALESCE_MEMBER_ASSIGN: COALESCE_MEMBER ASSIGN;
+DOT_ASSIGN: DOT ASSIGN;
+ARROW_DEREF_ASSIGN: ARROW_DEREF ASSIGN;
+ARROW_ASSIGN: ARROW ASSIGN;
+DOT_DEREF_ASSIGN: DOT_DEREF ASSIGN;
 ASSIGN: ':';
 
-AR_INCR: '++';
-AR_DECR: '--';
-BIT_NOT_NOT: '~~';
-LOG_NOT_NOT: '!!';
+AR_INCR: ADD ADD;
+AR_DECR: SUB SUB;
+BIT_NOT_NOT: BIT_NOT BIT_NOT;
+LOG_NOT_NOT: LOG_NOT LOG_NOT;
 
-ELLIPSIS: '...';
-RANGE: '..';
-ARROW_DEREF: '->' '@'+;
+ELLIPSIS: DOT DOT DOT;
+RANGE: DOT DOT;
+ARROW_DEREF: ARROW AT+;
 ARROW: '->';
-DOT_DEREF: '.' '@'+;
-AT: '@';
+DOT_DEREF: DOT AT+;
+AT: '@'; // Makeref, deref
 DOT: '.';
 COMMA: ',';
 SEMI: ';';
@@ -198,46 +199,47 @@ DELETE: 'delete';
 UNIQUE: 'unique';
 SHARED: 'shared';
 /* Arithmetic */
-AR_ADD: '+';
-AR_SUB: '-';
-AR_EXP: '**';
-AR_MUL: '*';
-AR_DIV: '/';
-AR_MOD: '%';
+ADD: '+';
+SUB: '-';
+EXP: MUL MUL;
+LOG: MOD MOD;
+MUL: '*';
+DIV: '/';
+MOD: '%';
 SH_LS: '<<<';
 SH_L: '<<';
 SH_RS: '>>>';
 SH_R: '>>';
-ROT_LEFT: '<=<';
-ROT_RIGHT: '>=>';
+ROT_L: '<=<';
+ROT_R: '>=>';
 /* Comparison */
-COMP_LTE: '<=';
-COMP_LT: '<';
-COMP_GTE: '>=';
-COMP_GT: '>';
-COMP_EQ: '==';
-COMP_NEQ: '!=';
+LTE: '<=';
+LT: '<';
+GTE: '>=';
+GT: '>';
+EQ: '==';
+NEQ: '!=';
 /* Logical */
-LOG_AND: '&&' | 'and';
-LOG_NAND: '!&&' | 'nand';
-LOG_OR: '||' | 'or';
-LOG_NOR: '!||' | 'nor';
-LOG_XOR: '^^' | 'xor';
-LOG_XNOR: '!^^' | 'xnor';
+LOG_AND: BIT_AND BIT_AND | 'and';
+LOG_NAND: LOG_NOT LOG_AND | 'nand';
+LOG_OR: BIT_OR BIT_OR | 'or';
+LOG_NOR: LOG_NOT LOG_OR | 'nor';
+LOG_XOR: BIT_XOR BIT_XOR | 'xor';
+LOG_XNOR: LOG_NOT LOG_XOR | 'xnor';
 LOG_NOT: '!' | 'not';
-AMP: '&';
-BIT_NAND: '~&';
+BIT_AND: '&'; // Also addressOf
+BIT_NAND: BIT_NOT BIT_AND;
 BIT_OR: '|';
-BIT_NOR: '~|';
+BIT_NOR: BIT_NOT BIT_OR;
 BIT_XOR: '^';
-BIT_XNOR: '~^';
+BIT_XNOR: BIT_NOT BIT_XOR;
 BIT_NOT: '~';
 /* Other */
 IS: 'is';
-IS_NOT: '!is';
-NULL_COALESCE: '??';
-NULL_COALESCE_MEMBER: '?.';
-NULL_IS_NULL: '?';
+IS_NOT: LOG_NOT IS | IS LOG_NOT;
+COALESCE: IS_NULL IS_NULL;
+COALESCE_MEMBER: IS_NULL DOT;
+IS_NULL: '?';
 
 /* Other keywords */
 ASM: 'asm' -> pushMode(Asm);
@@ -252,6 +254,7 @@ VALUE: 'value';
 FIELD: 'field';
 GET: 'get';
 SET: 'set';
+HASH: '#'; // label/tag
 DEFAULT: '_' | 'default';
 IDENTIFIER: [a-zA-Z][_a-zA-Z0-9]* | '_' [_a-zA-Z0-9]+;
 
@@ -259,17 +262,17 @@ mode LineString;
 QUOTE_CLOSE: '"'                              -> popMode;
 LINE_STR_TEXT: ~["$\\\n\r]+                   -> type(STR_TEXT);
 LINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR_FRAG -> type(STR_ESCAPED_CHAR);
+LINE_STR_DOLLAR: INTERP INTERP                -> type(STR_DOLLAR);
 LINE_STR_REF: INTERP_VAR                      -> type(STR_REF);
 LINE_STR_EXPR_START: STR_EXPRESSION_START     -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
 LINE_STR_NL: NL                               -> popMode, type(NL);
 
 mode MultiLineString;
-TRIPLE_QUOTE_CLOSE: MULTILINE_STR_QUOTE? '"""'     -> popMode;
-MULTILINE_STR_TEXT: ~["$]+                         -> type(STR_TEXT);
-MULTILINE_STR_ESCAPED_CHAR: STR_ESACAPED_CHAR_FRAG -> type(STR_ESCAPED_CHAR);
-MULTILINE_STR_REF: INTERP_VAR                      -> type(STR_REF);
-MULTILINE_STR_EXPR_START: STR_EXPRESSION_START     -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
-MULTILINE_STR_QUOTE: '"' | '""';
+BACKTICK_CLOSE: '`'                            -> popMode;
+MULTILINE_STR_TEXT: ~[$`]+                     -> type(STR_TEXT);
+MULTILINE_STR_DOLLAR: INTERP INTERP            -> type(STR_DOLLAR);
+MULTILINE_STR_REF: INTERP_VAR                  -> type(STR_REF);
+MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
 
 mode Asm;
 ASM_LCURLY: ' '* ('\r'? '\n')* ' '* '{' -> type(LCURLY);

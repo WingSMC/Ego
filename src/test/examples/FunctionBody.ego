@@ -18,3 +18,17 @@ u32 a;
 for(var a in 0..(b+100) const step b) {
 
 }
+
+
+val x: switch(a) {
+  (b) = x * y ** z ** w
+  (c) = 10
+  (x - 2) {
+    // valami
+    e*: 10
+    ~>
+  }
+  _ {
+    = e
+  }
+}
