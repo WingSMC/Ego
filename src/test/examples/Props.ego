@@ -10,10 +10,10 @@ class A is B {
 
   u32 Prop1: 100 {
     get => field
-    set { field: value * 10 }
+    set { field: value * 10; }
   }
   u32 Prop2 {
-    get { => field }
+    get { => field; }
     set {
       print("prop2 changed from {0} to {1}", field, value)
       field: value

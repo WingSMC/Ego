@@ -147,7 +147,7 @@ identifierListWithInheritance: (IDENTIFIER (IS accessedStaticIdentifier)? eoe)* 
 exprList: ((expr eoe)* expr? eoe?);
 constructorParamList: (constructorParam eoe)* constructorParam? eoe?;
 funcParamList: (functionParam eoe)* functionParam? eoe?;
-typenameList: (typename eoe)* typename? eoe?;
+typenameList: ((typename | IS_NULL) eoe)* (typename | IS_NULL)? eoe?;
 
 
 
@@ -225,7 +225,7 @@ expr:
   | parenExpr                                                                               # parens
   | switchStmt                                                                              # switchExpr
   | ifStmt                                                                                  # ifExpr
-  | (NEW | UNIQUE | SHARED)? accessedStaticIdentifier functionCallParams                    # alloc
+  | (NEW | UNIQUE | SHARED) accessedStaticIdentifier functionCallParams                     # alloc
   | (NEW | UNIQUE | SHARED)? accessedStaticIdentifier arrSize+                              # arrAlloc
   | DELETE expr                                                                             # delete
   | arrayLiteral                                                                            # arrayInitList
