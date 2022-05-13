@@ -278,10 +278,12 @@ typename:
   | T_INT_16
   | T_INT_32
   | T_INT_64
+  | T_INT_128
   | T_UINT_8
   | T_UINT_16
   | T_UINT_32
   | T_UINT_64
+  | T_UINT_128
   | T_FLOAT
   | T_DOUBLE
   | T_REAL
@@ -295,6 +297,7 @@ typename:
   | T_CHAR
   | T_CHAR_16
   | T_STRING
+  | T_REGEX
   | T_VAR
   | M_CONST
   | typename IS_NULL
