@@ -10,17 +10,17 @@ class A is B {
 
   u32 Prop1: 100 {
     get => field
-    set { field: value * 10; }
+    set => value * 10 // setter sets field to return value
   }
   u32 Prop2 {
     get { => field; }
     set {
       print("prop2 changed from {0} to {1}", field, value)
-      field: value
       asm {
         mov eax #100
         mov ebx (eax)
       }
+      => value
     }
   }
   string Prop3 { get; set; }
@@ -30,5 +30,11 @@ class A is B {
   }
   string Prop6 {
     set
+  }
+
+  // No "field" generated > Prop7::field -> error
+  u32 Prop7 {
+    get => this.c
+    set => this.c: value
   }
 }

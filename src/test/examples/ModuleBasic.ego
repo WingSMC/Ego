@@ -6,7 +6,7 @@ import {
   OtherModule {
     C as D
     E::M as F {
-        G
+        G<i32> as Gi32
         N
         O
     }
@@ -34,4 +34,8 @@ public module PublicModule {
     export {
         InternalModule::J as J
     }
+}
+
+export {
+    ExplicitlyInternalModule::J as _
 }

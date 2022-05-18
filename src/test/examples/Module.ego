@@ -1,8 +1,8 @@
-module Module
+module Test
 
 import {
   Props { A }
-  STL::Annotations::InstanceOf as InstanceOf
+  std::annotations::InstanceOf as InstanceOf
 }
 
 [InstanceOf]
