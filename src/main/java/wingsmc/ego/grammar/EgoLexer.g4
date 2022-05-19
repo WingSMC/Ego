@@ -127,9 +127,6 @@ QUOTE_OPEN: '"'                                      -> pushMode(LineString);
 /* Flow */
 F_WHILE: 'while';
 F_FOR: 'for';
-IN: 'in';
-OF: 'of';
-STEP: 'step';
 F_DO: 'do';
 F_IF: 'if';
 F_ELSE: 'else';
@@ -243,6 +240,9 @@ IS_NULL: '?';
 
 /* Other keywords */
 ASM_START: 'asm' WS '{' -> pushMode(Asm);
+IN: 'in';
+OF: 'of';
+STEP: 'step';
 SIZEOF: 'sizeof';
 TYPEOF: 'typeof';
 GLOBAL: 'global';
@@ -276,5 +276,5 @@ MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(DEFAULT_MODE), type(S
 
 mode Asm;
 ASM_LCURLY: '{' -> pushMode(Asm), type(ASM_START);
-ASM_RCURLY: '}'                         -> type(RCURLY), popMode;
+ASM_RCURLY: '}' -> type(RCURLY), popMode;
 ASM_CONTENT: ~[{}]+;

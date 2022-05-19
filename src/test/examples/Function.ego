@@ -1,7 +1,15 @@
-test() {
+// Inline comment
+/**
+* Block comment
+*/
+
+test<T>(T t) {
   for(var a in 0..(b+100)) {
 
   }
+
+  const a = "Hello"
+  var b = `World`
 
   for(var a in list) {
 
@@ -17,7 +25,8 @@ test() {
 
   u32 a;
   for(a in 0..(b+100) const step b) {
-
+    if(a) |>
+    <|
   }
 
 
@@ -25,7 +34,6 @@ test() {
     (b) = x * y ** z ** w
     (c) = 10
     (x - 2) {
-      // valami
       e*: 10
       ~>
     }
