@@ -32,7 +32,7 @@ class A is B {
     set
   }
 
-  // No "field" generated > Prop7::field -> error
+  // field never mentioned > no field generated > Prop7::field -> error
   u32 Prop7 {
     get => this.c
     set => this.c: value

@@ -12,11 +12,11 @@ public class B<K is Interfaces::Hash,V> is A<V>, C<K> {
   }
 
   u32 Prop: 100 {
-      get => field
-      set {
-          print("prop set")
-          field: value
-      }
+    get => field
+    set {
+      print("prop set")
+      field: value
+    }
   }
 
   hello() {

@@ -242,7 +242,7 @@ COALESCE_MEMBER: IS_NULL DOT;
 IS_NULL: '?';
 
 /* Other keywords */
-ASM: 'asm' -> pushMode(Asm);
+ASM_START: 'asm' WS '{' -> pushMode(Asm);
 SIZEOF: 'sizeof';
 TYPEOF: 'typeof';
 GLOBAL: 'global';
@@ -275,6 +275,6 @@ MULTILINE_STR_REF: INTERP_VAR                  -> type(STR_REF);
 MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
 
 mode Asm;
-ASM_LCURLY: ' '* ('\r'? '\n')* ' '* '{' -> type(LCURLY);
+ASM_LCURLY: '{' -> pushMode(Asm), type(ASM_START);
 ASM_RCURLY: '}'                         -> type(RCURLY), popMode;
 ASM_CONTENT: ~[{}]+;

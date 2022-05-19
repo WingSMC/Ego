@@ -172,8 +172,8 @@ stmt:
   | F_WHILE parenExpr stmt
   | F_DO stmt F_WHILE parenExpr eos
   | F_FOR forHeader stmt
-  | ASM LCURLY ASM_CONTENT rcurly
-  | F_TRICKLE eos
+  | asmBlock nls
+  | trickleStmt
   | F_CONTINUE (HASH IDENTIFIER) eos
   | F_BREAK (HASH IDENTIFIER) eos
   | F_GOTO IDENTIFIER eos
@@ -189,51 +189,53 @@ stmt:
 returnStmt: F_RETURN expr? eos;
 evalStmt: F_EVAL expr eos;
 yieldStmt: F_YIELD expr eos;
-forHeader: lparen T_VAR? IDENTIFIER (IN | OF) (range | expr) rparen;
+trickleStmt: F_TRICKLE eos;
+forHeader: lparen typename? IDENTIFIER (IN | OF) expr rparen;
 ifStmt: F_IF parenExpr nls stmt (F_ELSE stmt)?;
 switchStmt: F_SWITCH parenExpr nls switchBody;
 switchBody: lcurly switchCase* rcurly;
 switchCase: (parenExpr | expr) stmt;
-range: expr RANGE expr ((M_CONST)? STEP expr)?;
+asmBlock: ASM_START (ASM_CONTENT | asmBlock)* RCURLY;
 
 
 
 
 
 expr:
-  expr nls (ARROW | ARROW_DEREF | DOT | DOT_DEREF | COALESCE_MEMBER | SCOPE) nls IDENTIFIER # access
-  | (AT | BIT_AND) expr                                                                     # ptrRef
-  | (AR_INCR | AR_DECR | BIT_NOT | BIT_NOT_NOT | LOG_NOT | LOG_NOT_NOT | ADD | SUB) expr    # preUnary
-  | expr functionCallParams                                                                 # funcall
-  | <assoc= right> expr nls EXP nls expr                                                    # exp
-  | expr nls (MUL | DIV | MOD) nls expr                                                     # mulDivMod
-  | expr nls (ADD | SUB) nls expr                                                           # addSub
-  | expr nls (SH_L | SH_R | SH_LS | SH_RS | ROT_L | ROT_R) nls expr                         # shRot
-  | expr nls (EQ | NEQ | LT | GT | LTE | GTE) nls expr                                      # compare
-  | expr nls (BIT_AND | BIT_NAND) nls expr                                                  # bitAnd
-  | expr nls (BIT_OR | BIT_NOR) nls expr                                                    # bitOr
-  | expr nls (BIT_XOR | BIT_XNOR) nls expr                                                  # bitXor
-  | expr nls (LOG_AND | LOG_NAND) nls expr                                                  # logAnd
-  | expr nls (LOG_OR | LOG_NOR) nls expr                                                    # logOr
-  | expr nls (LOG_XOR | LOG_XNOR) nls expr                                                  # logXor
-  | <assoc= right> expr nls COALESCE nls expr                                               # coalesce
-  | expr nls (IS | IS_NOT) nls accessedStaticIdentifier                                     # typecheck
-  | expr nls AS nls typename                                                                # cast
-  | <assoc= right> expr opAssignment expr                                                   # assignment
-  | parenExpr                                                                               # parens
-  | switchStmt                                                                              # switchExpr
-  | ifStmt                                                                                  # ifExpr
-  | (NEW | UNIQUE | SHARED) accessedStaticIdentifier functionCallParams                     # alloc
-  | (NEW | UNIQUE | SHARED)? accessedStaticIdentifier arrSize+                              # arrAlloc
-  | DELETE expr                                                                             # delete
-  | arrayLiteral                                                                            # arrayInitList
-  | ELLIPSIS expr                                                                           # spread
-  | F_AWAIT expr                                                                            # await
-  | F_THROW expr                                                                            # throwExpr
-  | SIZEOF expr                                                                             # sizeofExpr
-  | variableDecl                                                                            # varDeclExpr
-  | literal                                                                                 # litExpr
-  | variable                                                                                # varExpr;
+  (AT | BIT_AND) expr                                                                         # ptrRef
+  | expr nls (ARROW | ARROW_DEREF | DOT | DOT_DEREF | COALESCE_MEMBER | SCOPE) nls IDENTIFIER # access
+  | (AR_INCR | AR_DECR | BIT_NOT | BIT_NOT_NOT | LOG_NOT | LOG_NOT_NOT | ADD | SUB) expr      # preUnary
+  | expr functionCallParams                                                                   # funcall
+  | <assoc= right> expr nls EXP nls expr                                                      # exp
+  | expr nls (MUL | DIV | MOD) nls expr                                                       # mulDivMod
+  | expr nls (ADD | SUB) nls expr                                                             # addSub
+  | expr nls (SH_L | SH_R | SH_LS | SH_RS | ROT_L | ROT_R) nls expr                           # shRot
+  | expr nls (EQ | NEQ | LT | GT | LTE | GTE) nls expr                                        # compare
+  | expr nls (BIT_AND | BIT_NAND) nls expr                                                    # bitAnd
+  | expr nls (BIT_OR | BIT_NOR) nls expr                                                      # bitOr
+  | expr nls (BIT_XOR | BIT_XNOR) nls expr                                                    # bitXor
+  | expr nls (LOG_AND | LOG_NAND) nls expr                                                    # logAnd
+  | expr nls (LOG_OR | LOG_NOR) nls expr                                                      # logOr
+  | expr nls (LOG_XOR | LOG_XNOR) nls expr                                                    # logXor
+  | <assoc= right> expr nls COALESCE nls expr                                                 # coalesce
+  | expr nls (IS | IS_NOT) nls accessedStaticIdentifier                                       # typecheck
+  | expr nls AS nls typename                                                                  # cast
+  | <assoc= right> expr opAssignment expr                                                     # assignment
+  | parenExpr                                                                                 # parens
+  | switchStmt                                                                                # switchExpr
+  | ifStmt                                                                                    # ifExpr
+  | (NEW | UNIQUE | SHARED) accessedStaticIdentifier functionCallParams                       # alloc
+  | (NEW | UNIQUE | SHARED)? accessedStaticIdentifier arrSize+                                # arrAlloc
+  | DELETE expr                                                                               # delete
+  | arrayLiteral                                                                              # arrayInitList
+  | ELLIPSIS expr                                                                             # spread
+  | F_AWAIT expr                                                                              # await
+  | F_THROW expr                                                                              # throwExpr
+  | SIZEOF expr                                                                               # sizeofExpr
+  | variableDecl                                                                              # varDeclExpr
+  | literal                                                                                   # litExpr
+  | expr RANGE expr ((M_CONST)? STEP expr)?                                                   # rangeExpr
+  | variable                                                                                  # varExpr;
 
 
 
