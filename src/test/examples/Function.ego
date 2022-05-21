@@ -8,8 +8,8 @@ test<T>(T t) {
 
   }
 
-  const a = "Hello"
-  var b = `World`
+  const a: "Hello"
+  var b: `World`
 
   for(var a in list) {
 

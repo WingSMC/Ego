@@ -254,7 +254,7 @@ VALUE: 'value';
 FIELD: 'field';
 GET: 'get';
 SET: 'set';
-HASH: '#'; // label/tag
+HASH: '#';
 DEFAULT: '_' | 'default';
 IDENTIFIER: [a-zA-Z][_a-zA-Z0-9]* | '_' [_a-zA-Z0-9]+;
 
