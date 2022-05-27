@@ -4,12 +4,14 @@ string a: "asd"
 string b: "$asd"
 string c: "${a}sd"
 string d: "\$$asd"
-string e: """asd"""
-string f: """$asd"""
-string g: """${a}sd"""
-string h: """"\$""""
-string i: """Hello,
-World!"""
-string j: """a"Hello""""
-string k: """"""""
+string e: `asd`
+string f: `$asd`
+string s: #@`
+	$var      sometext
+	${a + b}  $$text
+`
+string h: `"\$"`
+string i: #`Hello,
+	World!`
+string j: `a"Hello"`
 string l

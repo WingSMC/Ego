@@ -6,12 +6,14 @@ import {
 }
 
 [InstanceOf]
-public class B<K is Interfaces::Hash,V> is A<V>, C<K> {
+public class B<Interfaces::Hash K,V> is A<V>, C<K> {
+  private own const i32& x;
   public () {
     super(10)
+    x: new i32(42)
   }
 
-  u32 Prop: 100 {
+  static u32 Prop: 100 {
     get => field
     set {
       print("prop set")
@@ -19,19 +21,23 @@ public class B<K is Interfaces::Hash,V> is A<V>, C<K> {
     }
   }
 
-  hello() {
-    print("Hello ${Prop::field}")
+  async hello() {
+    print("Hello ${B<K,V>::Prop::field}\n")
   }
 
   i32 main(List<?> args) {
-    hello()
+    await hello()
     this.hello()
     this->hello()
     (@this).hello()
+    while (string a = await fetch()) {
+      println(a)
+    }
     => 0
   }
 
   virtual ~ {
+    delete x
     print("~B")
   }
 }

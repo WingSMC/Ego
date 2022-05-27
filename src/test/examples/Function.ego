@@ -19,12 +19,12 @@ test<T>(T t) {
 
   }
 
-  for(var a in 0..(b+100) const step b) {
+  for(var a in 0..(b+100) var step b) {
 
   }
 
   u32 a;
-  for(a in 0..(b+100) const step b) {
+  for(a in var 0..(b+100) step b) {
     if(a) |>
     <|
   }
