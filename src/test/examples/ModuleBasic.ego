@@ -1,17 +1,18 @@
 module TestModule
 
 import {
-  Props as Props {A}
-  B as _
-  OtherModule {
-    C as D
-    E::M as F {
-        G<i32> as Gi32
-        N
-        O
+    Props as Props {A}
+    B as _
+    OtherModule {
+        C as D
+        E::M as F {
+            G<i32> as Gi32
+            G<i64> as Gi64
+            N
+            O
+        }
     }
-  }
-  STL::Annotations::InstanceOf as InstanceOf
+    STL::Annotations::InstanceOf as InstanceOf
 }
 
 public module PublicModule {

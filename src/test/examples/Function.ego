@@ -30,7 +30,7 @@ test<T>(T t) {
   }
 
 
-  val x: switch(a) {
+  const x: switch(a) {
     (b) = x * y ** z ** w
     (c) = 10
     (x - 2) {
