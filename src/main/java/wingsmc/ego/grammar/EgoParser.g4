@@ -4,7 +4,7 @@ options {
   tokenVocab= EgoLexer;
 }
 
-program: fileLevelModuleDecl;
+file: fileLevelModuleDecl;
 nls: NL*;
 eos: NL+ | nls SEMI nls;
 eoe: NL+ | nls COMMA nls;
@@ -169,13 +169,13 @@ stringExpression: STR_EXPR_START expr RCURLY;
 seqStmt: stmt*;
 stmt:
   blockStmt
-  | F_WHILE parenExpr stmt
-  | F_DO stmt F_WHILE parenExpr eos
-  | F_FOR forHeader stmt
+  | F_WHILE tag? parenExpr stmt
+  | F_DO stmt F_WHILE tag? parenExpr eos
+  | F_FOR tag? forHeader stmt
   | asmBlock nls
   | trickleStmt
-  | F_CONTINUE (HASH IDENTIFIER) eos
-  | F_BREAK (HASH IDENTIFIER) eos
+  | F_CONTINUE tag? eos
+  | F_BREAK tag? eos
   | F_GOTO IDENTIFIER eos
   | F_TRY parenExpr? nls stmt (F_CATCH parenExpr nls stmt)* (F_FINALLY nls stmt)?
   | ifStmt
@@ -185,17 +185,19 @@ stmt:
   | returnStmt
   | evalStmt
   | yieldStmt
-  | expr eos;
-returnStmt: F_RETURN expr? eos;
-evalStmt: F_EVAL expr eos;
+  | expr eos
+  | tag eos;
+returnStmt: F_RETURN tag? expr? eos;
+evalStmt: F_EVAL tag? expr eos;
 yieldStmt: F_YIELD expr eos;
 trickleStmt: F_TRICKLE eos;
 forHeader: lparen typename? IDENTIFIER (IN | OF) expr rparen;
-ifStmt: F_IF parenExpr nls stmt (F_ELSE stmt)?;
-switchStmt: F_SWITCH parenExpr nls switchBody;
+ifStmt: F_IF tag? parenExpr nls stmt (F_ELSE stmt)?;
+switchStmt: F_SWITCH tag? parenExpr nls switchBody;
 switchBody: lcurly switchCase* rcurly;
 switchCase: (parenExpr | expr) stmt;
 asmBlock: ASM_START (ASM_CONTENT | asmBlock)* RCURLY;
+tag: HASH IDENTIFIER;
 
 
 

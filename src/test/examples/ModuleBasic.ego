@@ -16,27 +16,28 @@ import {
 }
 
 public module PublicModule {
-    module InternalModule {
-        internal module ExplicitlyInternalModule {
-            import {
-                H
-            }
+  module InternalModule {
+    internal module ExplicitlyInternalModule {
+      import {
+        H
+      }
 
-            export {
-                H::I as J
-                H::K::P as L
-            }
-        }
-
-        export {
-            ExplicitlyInternalModule::J as J
-        }
+      export {
+        H::I as J
+        H::K::P as L
+      }
     }
+
     export {
-        InternalModule::J as J
+      ExplicitlyInternalModule::J as J
     }
+  }
+  export {
+    InternalModule::J as J
+  }
 }
 
-export {
-    ExplicitlyInternalModule::J as _
+export
+{
+  B as _
 }

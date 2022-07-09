@@ -112,6 +112,7 @@ M_ABSTRACT: 'abstract';
 M_STATIC: 'static';
 M_CONST: 'const';
 M_VOLATILE: 'volatile';
+M_TRANSIENT: 'transient';
 M_ASYNC: 'async';
 
 /* Literals */
@@ -120,7 +121,7 @@ LIT_DOUBLE: ([1-9][0-9]* | '0')? '.' [0-9]+ ('e' [1-9][0-9]*)?;
 LIT_NULL: 'null';
 LIT_TRUE: 'true';
 LIT_FALSE: 'false';
-LIT_CHAR: '\'' (. | UNICODE_CHAR_LIT | ESCAPE_SEQ) '\'';
+LIT_CHAR: '\'' (UNICODE_CHAR_LIT | ESCAPE_SEQ | .) '\'';
 BACKTICK_OPEN: IDENTIFIER? (AT | HASH | INTERP)* '`' -> pushMode(MultiLineString);
 QUOTE_OPEN: '"'                                      -> pushMode(LineString);
 
@@ -254,7 +255,7 @@ VALUE: 'value';
 FIELD: 'field';
 GET: 'get';
 SET: 'set';
-HASH: '#'; // label/tag
+HASH: '#';
 DEFAULT: '_' | 'default';
 IDENTIFIER: [a-zA-Z][_a-zA-Z0-9]* | '_' [_a-zA-Z0-9]+;
 
