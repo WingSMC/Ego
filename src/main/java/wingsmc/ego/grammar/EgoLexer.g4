@@ -59,6 +59,7 @@ LCURLY: '{'  -> pushMode(DEFAULT_MODE);
 RCURLY: '}'  -> popMode;
 
 /* Typenames */
+T_LET: 'let';
 T_VOID: 'void';
 T_BOOL: 'bool';
 T_INT_8: 'i8';
@@ -85,7 +86,6 @@ T_MAT_2: 'mat2';
 T_MAT_3: 'mat3';
 T_MAT_4: 'mat4';
 T_REGEX: 'regex';
-T_VAR: 'var';
 
 /* Module */
 MODULE: 'module';
@@ -102,17 +102,15 @@ STRUCT_EXCEPTION: 'exception';
 STRUCT_ANNOTATION: 'annotation';
 
 /* Modifiers */
-M_PUBLIC: 'public';
-M_PROTECTED: 'protected';
-M_PRIVATE: 'private';
-M_INTERNAL: 'internal';
+M_PUBLIC: 'pub';
+M_PROTECTED: 'pro';
+M_MUT: 'mut';
+M_SEALED: 'sealed';
+M_CONST: 'const';
 M_VIRTUAL: 'virtual';
 M_OVERRIDE: 'override';
 M_ABSTRACT: 'abstract';
 M_STATIC: 'static';
-M_CONST: 'const';
-M_VOLATILE: 'volatile';
-M_TRANSIENT: 'transient';
 M_ASYNC: 'async';
 
 /* Literals */
@@ -135,8 +133,8 @@ F_SWITCH: 'switch';
 F_TRY: 'try';
 F_CATCH: 'catch';
 F_FINALLY: 'finally';
-F_BREAK: '<|' | 'break';
-F_CONTINUE: '|>' | 'continue';
+F_BREAK: 'break';
+F_CONTINUE: 'continue';
 F_RETURN: '=>' | 'ret' | 'return';
 F_EVAL: '=' | 'eval';
 F_THROW: '=>>' | 'throw';
@@ -161,6 +159,7 @@ SH_R_S_ASSIGN: SH_RS ASSIGN;
 SH_L_ASSIGN: SH_L ASSIGN;
 SH_R_ASSIGN: SH_R ASSIGN;
 GT_ASSIGN: GT ASSIGN;
+EQ_ASSIGN: EQ ASSIGN;
 LT_ASSIGN: LT ASSIGN;
 NEQ_ASSIGN: NEQ ASSIGN;
 LOG_AND_ASSIGN: LOG_AND ASSIGN;
@@ -172,6 +171,7 @@ BIT_XOR_ASSIGN: BIT_XOR ASSIGN;
 COALESCE_ASSIGN: COALESCE ASSIGN; // Assign if lvalue is null
 NON_NULL_ASSIGN: IS_NULL ASSIGN;  // Assign if rvalue is not null
 COALESCE_MEMBER_ASSIGN: COALESCE_MEMBER ASSIGN;
+COALESCE_PTR_MEMBER_ASSIGN: COALESCE_PTR_MEMBER ASSIGN;
 DOT_ASSIGN: DOT ASSIGN;
 ARROW_DEREF_ASSIGN: ARROW_DEREF ASSIGN;
 ARROW_ASSIGN: ARROW ASSIGN;
@@ -183,19 +183,23 @@ AR_DECR: SUB SUB;
 BIT_NOT_NOT: BIT_NOT BIT_NOT;
 LOG_NOT_NOT: LOG_NOT LOG_NOT;
 
+/* Other 1 */
 ELLIPSIS: DOT DOT DOT;
 RANGE: DOT DOT;
 ARROW_DEREF: ARROW AT+;
 ARROW: '->';
 DOT_DEREF: DOT AT+;
+CALL_CHAIN: '|>';
 AT: '@'; // Makeref, deref
 DOT: '.';
 COMMA: ',';
 SEMI: ';';
-NEW: 'new';
 DELETE: 'delete';
 UNIQUE: 'unique';
 SHARED: 'shared';
+NEW: 'new';
+
+
 /* Arithmetic */
 ADD: '+';
 SUB: '-';
@@ -210,7 +214,13 @@ SH_RS: '>>>';
 SH_R: '>>';
 ROT_L: '<=<';
 ROT_R: '>=>';
+SWAP_BITS: '<>';
+SWAP_BYTES: '<->';
+SWAP_BITS_AND_BYTES: '<=>';
+
+
 /* Comparison */
+SPACESHIP: '<==>';
 LTE: '<=';
 LT: '<';
 GTE: '>=';
@@ -237,6 +247,7 @@ IS: 'is';
 IS_NOT: LOG_NOT IS | IS LOG_NOT;
 COALESCE: IS_NULL IS_NULL;
 COALESCE_MEMBER: IS_NULL DOT;
+COALESCE_PTR_MEMBER: IS_NULL ARROW;
 IS_NULL: '?';
 
 /* Other keywords */

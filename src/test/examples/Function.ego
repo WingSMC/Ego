@@ -4,41 +4,36 @@
 */
 
 test<T>(T t) {
-  for(var a in 0..(b+100)) {
+  mut let chars: "Hello";
+  let b: `World`;
 
+  loop {
   }
 
-  const a: "Hello"
-  var b: `World`
-
-  for(var a in list) {
-
+  for i in list {
   }
 
-  for(var a in 0..10 step 2) {
-
+  for i in 0..10 step 2 {
   }
 
-  for(var a in 0..(b+100) var step b) {
-
+  for mut a in 0..100 mut step b {
   }
 
-  u32 a;
-  for(a in var 0..(b+100) step b) {
-    if(a) |>
-    <|
+  let a = 10;
+  for a in let 0..b+100 step b {
+    if a instanceof i32 {
+      break;
+    }
+    continue;
   }
 
-
-  const x: switch(a) {
-    (b) = x * y ** z ** w
-    (c) = 10
-    (x - 2) {
-      e*: 10
+  let x: switch(a) {
+    b = x * y ** z ** w;
+    c = 10;
+    x - 2 {
+      e*: 10;
       ~>
     }
-    (_) {
-      = e
-    }
+    _ = e;
   }
 }
