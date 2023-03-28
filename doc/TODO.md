@@ -1,30 +1,29 @@
 # TODOs
 
-- [ ] Macros
-- [ ] const step -> mut step
-- [ ] nls after return&eval&...
-- [ ] get set access spec
-- [ ] unsafe scopes and change that & can only be used there
-  - [ ] ->&
-  - [ ] .&
-- [ ] integral/double division differentiate
-- [ ] named function params
+## TODO now
+
 - [ ] assignment operators to vscode ext
-- [ ] option and result types
 - [ ] remove try catch
-
-- [ ] function, object to type
-
-- [ ] C# init
 - [ ] destructure assignment default value
-- [ ] go like channels?
-
 - [ ] alternative to step (in loops) in iterators
-- [ ] index from the end: arr[^4]
-- [ ] take sub array: arr[3..4]  arr[3#4]
-- [ ] elixir style bit map <<1::size(2), 7::size(3)>>  => 01 111
 
-- [ ] disallow comparison of floating point numbers (make a separate way with some epsilon/delta)
+
+## TODO later
+
+- [ ] C# style init module (works like a script file)
+- [ ] tests are part of the language
+- [ ] Multi threading/fibers & coroutines & tasks
+- [ ] rust style mutexes
 - [ ] rust style borrow checker
-- [ ] safe block (gets interrupted by event)
 - [ ] lazy evaluation for function arguments?
+- [ ] go like channels?
+- [ ] unsafe blocks
+- [ ] custom allocators
+- [ ] generics
+- [ ] strong macro system (AST manipulation & code generation)
+- [ ] disallow comparison of floating point numbers (make a separate way with some epsilon/delta)
+- [ ] classes
+  - [ ] getters/setters C#/Kotlin style
+- [ ] Interators
+  - [ ] Can be evaluated like C style loop variables
+  - [ ] Variable step size (or even multiplying,... step size)
