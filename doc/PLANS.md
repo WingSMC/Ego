@@ -40,7 +40,10 @@
 - [ ] NO FUNCTION OVERLOADING
 - [ ] named function params
 - [ ] optional semicolons & colons (ASI)
-- [ ] pipe operator
+- [ ] pipe operator (|>)
+- [ ] macro system
+- [ ] multiline strings
+- [ ] string iterpolation
 - [ ] destructuring assignment for tuples & structs & arrays
 - [ ] take sub array: arr[3..4]  arr[3#4]
 - [ ] index from the end: arr[^4]
