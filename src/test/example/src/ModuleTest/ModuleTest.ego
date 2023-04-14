@@ -1,0 +1,32 @@
+/**
+* Documentation
+*/
+
+module ModuleTest
+
+import {
+	std {
+		/* import printdbg from std::io and use it as if it were in the global namespace */
+		io { printdbg },
+		/* import everything from std::io::net and use it as if these were in the global namespace */
+		io::net as _,
+		/* import std::collections as coll and also import it's List into the global namespace */
+		collections as coll { List },
+		/* import math::cos as math::cos */
+		math::cos,
+		/* these two are the same */
+		math::crypto as crypto,
+		math {
+			crypto
+		},
+	},
+	/* Import the current project's models module (src/models) */
+	::models,
+}
+
+pub {string, i32} swapRadix(@i32 num) {}
+
+pub class A {
+	i32 x,
+	str s,
+}

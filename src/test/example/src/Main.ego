@@ -1,0 +1,61 @@
+// Line comment, must be the first thing on the line (except for whitespace),
+// doesn't work at the end
+/**
+* Doc comment
+*/
+
+/*
+Block comment
+*/
+
+// optional module declaration, if there isn't any, it's part of global
+// The main (entry) function is always in the global module
+
+import {
+	loopTest
+}
+
+i32 main() {
+	var boolean = true;
+
+	// i8
+	var byte = 127b;
+	// i16
+	var short = 32767s;
+	// i32
+	var int = 10;
+	// i64
+	var long = 10l;
+
+	// i8
+	var ubyte = 256ub;
+	// i16
+	var ushort = 65536us;
+	// i32
+	var uint = 10u;
+	// i64
+	var ulong = 10ul;
+
+	// double
+	var d = 200.0;
+	// float
+	var c = 10f;
+
+	var char = 'H';
+	var slStr = "${if (1 < 2) char else 'Y'}ello";
+	// indentation is removed to the same depth as the start of the string
+	// Hello\n$\nWorld!
+	var mlStr = 
+		`
+		$slStr
+		$$
+		World!
+		`;
+
+	// 4 byte 00000001 0111111-01111111 11111111
+	var bitMap = {{ ..., 1::1 , byte, short }};
+	&i32 arr = [1, 2, 3, 4, 5];
+	var touple = ("asd", 'c', 10, 10.0);
+
+	ret 0;
+}

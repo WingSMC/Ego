@@ -6,7 +6,7 @@
 			"type": "antlr-debug",
 			"request": "launch",
 			"input": "${file}",
-			"grammar": "${workspaceFolder}/src/main/java/wingsmc/ego/grammar/EgoParser.g4",
+			"grammar": "${workspaceFolder}/src/main/java/wingsmc/ego/grammar/EgoV2Parser.g4",
 			"printParseTree": true,
 			"visualParseTree": true
 		}

@@ -3,9 +3,7 @@
 * Block comment
 */
 
-test<T>(T t) {
-  mut let chars: "Hello";
-  let b: `World`;
+test(Type t) {
 
   loop {
   }
@@ -19,15 +17,15 @@ test<T>(T t) {
   for mut a in 0..100 mut step b {
   }
 
-  let a = 10;
-  for a in let 0..b+100 step b {
+  var a = 10;
+  for a in var 0..b+100 step b {
     if a instanceof i32 {
       break;
     }
     continue;
   }
 
-  let x: switch(a) {
+  var x: switch(a) {
     b = x * y ** z ** w;
     c = 10;
     x - 2 {

@@ -1,7 +1,7 @@
 parser grammar EgoParser;
 
 options {
-  tokenVocab= EgoLexer;
+  tokenVocab = EgoLexer;
 }
 
 file: fileLevelModuleDecl;
