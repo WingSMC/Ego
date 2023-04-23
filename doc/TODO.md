@@ -34,3 +34,4 @@
 - [ ] rust style borrow checker
 - [ ] lazy evaluation for function arguments?
 - [ ] version migrator
+- [ ] module & package initializer
