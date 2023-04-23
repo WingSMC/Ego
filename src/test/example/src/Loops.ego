@@ -1,3 +1,12 @@
+import {
+	std {
+		io {
+			print
+		}
+		math::Random
+	}
+}
+
 loopTest() {
 	// infinite loop
 	loop {
@@ -8,33 +17,34 @@ loopTest() {
 	var n = 10;
 	// loop n times, i is the iteration number from 0
 	loop n; i {
-		printdbg(i);
+		print(i);
 	}
 
 	mut var array = [1, 2, 3, 4, 5]
 
 	// readonly reference
 	for item in @array; i {
-		printdbg(i, item);
+		print(i, item);
 	}
 
 	// mutable reference
-	for (item in @mut array) {
+	for item in @mut array {
 		item = 10;
 	}
 	// array = [10, 10, 10, 10, 10] 
-	printdbg(array);
+	print(array);
 
 	// copy
-	for (item in array) {
+	for item in array {
 		item = 10;
-		printdbg(item);
+		print(item);
 	}
 
 	// default constructed random
 	var random = math::Random();
 
-	while(random.double() < 0.5) {}
+	while random.double() < 0.5 {}
 
-	do {} while(random.double() < 0.5)
+	do {
+  } while random.double() < 0.5
 }

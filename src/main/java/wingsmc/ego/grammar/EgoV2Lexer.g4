@@ -80,13 +80,12 @@ RET: 'ret';
 MUT: 'mut';
 PUB: 'pub';
 PRO: 'pro';
-DEREF: '@';
+AT: '@';
 ADDR: '&';
-REF: '#';
+HASH: '#';
 
 IN: 'in';
 EQ: '==';
-ASSIGN: '=';
 INCREMENT: '++';
 PLUS: '+';
 DECREMENT: '--';
@@ -103,11 +102,15 @@ SH1R: '>>>';
 SH0R: '>>';
 SH1L: '<<<';
 SH0L: '<<';
-
 ROTL: '<-<';
 ROTR: '>->';
 ENDIAN_BIT_SWAP: '<->';
 ENDIAN_BYTE_SWAP: '<=>';
+LTE: '<=';
+GTE: '>=';
+LT: '<';
+GT: '>';
+ASSIGN: '=';
 
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 

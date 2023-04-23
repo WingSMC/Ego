@@ -14,9 +14,8 @@ accessModifer
     | PRO
     ;
 typeModifier
-    : DEREF
+    : AT
     | ADDR
-    | REF
     ;
 
 scopedIdentifier: (ID (STATIC_ACCESS_OP ID)* | (STATIC_ACCESS_OP ID)+) | THIS;
