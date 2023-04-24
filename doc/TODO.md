@@ -2,6 +2,7 @@
 
 ## TODO now
 
+- [ ] Comp & Logic operators
 - [ ] Enums
 - [ ] Class member functions
 - [ ] Interfaces
@@ -38,6 +39,7 @@
   - [ ] ORM
   - [ ] Serialization (JSON & Binary)
 - [ ] rust style borrow checker
+  - [ ] dispatchable annotaion for multithreading (would remove the need for most borrowings)
   - [ ] partial borrowing for collections
 - [ ] lazy evaluation for function arguments?
 - [ ] version migrator

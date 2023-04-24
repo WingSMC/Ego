@@ -53,8 +53,8 @@ i32 main() {
 		`;
 
 	// 4 byte 00000001 0111111-01111111 11111111
-	var bitMap = {{ ..., 1::1 , byte, short }};
-	&i32 arr = [1, 2, 3, 4, 5];
+	//var bitMap = {{ ..., 1::1 , byte, short }};
+	#i32 arr = [1, 2, 3, 4, 5];
 	var touple = ("asd", 'c', 10, 10.0);
 
 	ret 0;

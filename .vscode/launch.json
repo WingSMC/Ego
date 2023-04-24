@@ -7,6 +7,7 @@
 			"request": "launch",
 			"input": "${file}",
 			"grammar": "${workspaceFolder}/src/main/java/wingsmc/ego/grammar/EgoV2Parser.g4",
+			"startRule": "moduleFile",
 			"printParseTree": true,
 			"visualParseTree": true
 		}

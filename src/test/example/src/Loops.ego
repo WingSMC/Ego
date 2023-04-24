@@ -8,43 +8,25 @@ import {
 }
 
 loopTest() {
-	// infinite loop
 	loop {
-		// break out of loop
-		break;
+		break
 	}
-
-	var n = 10;
-	// loop n times, i is the iteration number from 0
+	var n = 10
 	loop n; i {
-		print(i);
+		print(i)
 	}
 
 	mut var array = [1, 2, 3, 4, 5]
-
-	// readonly reference
-	for item in @array; i {
-		print(i, item);
+	for item in array; i {
+		print(i, item)
 	}
-
-	// mutable reference
-	for item in @mut array {
-		item = 10;
+	for mut item in array {
+		item = 10
 	}
-	// array = [10, 10, 10, 10, 10] 
-	print(array);
+	print(array) // [10, 10, 10, 10, 10]
 
-	// copy
-	for item in array {
-		item = 10;
-		print(item);
-	}
-
-	// default constructed random
-	var random = math::Random();
-
+	var random = math::Random()
 	while random.double() < 0.5 {}
-
 	do {
   } while random.double() < 0.5
 }

@@ -26,13 +26,14 @@ fragment BIN_NUMBER: '0' [bB] BIN_DIGIT+;
 fragment STR_ESCAPED_CHAR_FRAG: '\\' . | UNICODE_CHAR_LIT;
 fragment UNICODE_CHAR_LIT: '\\u' HEX_QUAD;
 
-
 DOC_COMMENT: '/**' .*? '*/'  -> channel(DOCUMENTATION);
 BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 LINE_COMMENT: '//' ~[\r\n]*  -> skip;
 WS: [ \t\r\n]+               -> skip;
 STATIC_ACCESS_OP: '::';
+RANGE: '..';
 ACCESS_OP: '.' | '->';
+COLON: ':';
 
 LCURLY: '{'  -> pushMode(DEFAULT_MODE);
 RCURLY: '}'  -> popMode;
@@ -47,55 +48,81 @@ MODULE: 'module';
 IMPORT: 'import';
 EXPORT: 'export';
 AS: 'as';
-
 CLASS: 'class';
+USE: 'use';
 INTERFACE: 'interface';
-
+IMPL: 'impl';
 THIS: 'this';
 VAR: 'var';
-
 LOOP: 'loop';
-FOR: 'for';
 WHILE: 'while';
+FOR: 'for';
+IN: 'in';
 DO: 'do';
-
+IF: 'if';
+ELSE: 'else';
+WHEN: 'when';
 BREAK: 'break';
 CONTINUE: 'continue';
-RET: 'ret';
-
+YIELD: 'yield';
+RET: 'ret' | '=>';
+JMP: 'jmp';
 MUT: 'mut';
 PUB: 'pub';
 PRO: 'pro';
-AT: '@';
-ADDR: '&';
-HASH: '#';
 
 /* Operators */
-IN: 'in';
+NEW: 'new';
+UNIQUE: 'unique';
+SHARED: 'shared';
+DELETE: 'delete';
+PIPE: '|>';
+AT: '@';
+TAG: '#';
+
 INCREMENT: '++';
-PLUS: '+';
 DECREMENT: '--';
-MINUS: '-';
 LOGIC_FLIP: '!!';
-LOGIC_NOT: '!';
 BIN_FLIP: '~~';
-BIN_NOT: '~';
+ENDIAN_BIT_SWAP: '<>';
+ENDIAN_BYTE_SWAP: '<->';
 EXP: '**';
+SH1R: '>>>';
+SH1L: '<<<';
+SH0R: '>>';
+SH0L: '<<';
+ROTR: '>->';
+ROTL: '<-<';
+
+LOGIC_AND: '&&' | 'and';
+LOGIC_NAND: '!&&' | 'nand';
+LOGIC_OR: '||' | 'or';
+LOGIC_NOR: '!||' | 'nor';
+LOGIC_XOR: '^^' |'xor';
+LOGIC_XNOR: '!^^' | 'xnor';
+
+NAND: '!&';
+XNOR: '!^';
+NOR:  '!|';
+
+SPACESHIP: '<=>';
+EQ:        '==';
+NEQ:       '!=';
+LTE:       '<=';
+GTE:       '>=';
+
 MUL: '*';
 DIV: '/';
-ENDIAN_BIT_SWAP: '<->';
-ENDIAN_BYTE_SWAP: '<=>';
-SH1R: '>>>';
-SH0R: '>>';
-ROTR: '>->';
-GTE:  '>=';
-GT:   '>';
-SH1L: '<<<';
-SH0L: '<<';
-ROTL: '<-<';
-LTE:  '<=';
-LT:   '<';
-EQ: '==';
+MOD: '%';
+PLUS: '+';
+MINUS: '-';
+LOGIC_NOT: '!' | 'not';
+AND: '&';
+XOR: '^';
+OR: '|';
+GT: '>';
+LT: '<';
+BIN_NOT: '~';
 ASSIGN: '=';
 
 /* Literals */
@@ -112,13 +139,13 @@ QUOTE_OPEN: '"'        -> pushMode(LineString);
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 
 mode LineString;
-QUOTE_CLOSE: '"'                             -> popMode;
-LINE_STR_ESCAPED_CHAR: STR_ESCAPED_CHAR_FRAG -> type(STR_ESCAPED_CHAR);
-LINE_STR_TEXT: ~["$\\\n\r]+                  -> type(STR_TEXT);
-LINE_STR_DOLLAR: '$' '$'                     -> type(STR_DOLLAR);
-LINE_STR_REF: INTERP_VAR                     -> type(STR_REF);
-LINE_STR_EXPR_START: STR_EXPRESSION_START    -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
-LINE_STR_NL: '\r'? '\n'                      -> popMode;
+QUOTE_CLOSE: '"'                               -> popMode;
+LINE_STR_ESCAPED_CHAR: STR_ESCAPED_CHAR_FRAG   -> type(STR_ESCAPED_CHAR);
+LINE_STR_TEXT: ~["$\\\n\r]+                    -> type(STR_TEXT);
+LINE_STR_DOLLAR: '$' '$'                       -> type(STR_DOLLAR);
+LINE_STR_REF: INTERP_VAR                       -> type(STR_REF);
+LINE_STR_EXPR_START: STR_EXPRESSION_START      -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
+LINE_STR_NL: '\r'? '\n'                        -> popMode;
 
 mode MultiLineString;
 BACKTICK_CLOSE: '`'                            -> popMode;
