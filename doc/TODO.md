@@ -2,23 +2,27 @@
 
 ## TODO now
 
-- [ ] Comp & Logic operators
 - [ ] Enums
-- [ ] Class member functions
-- [ ] Interfaces
-  - [ ] Impl blocks
-- [ ] Member functions
-- [ ] Lambda (and shorthand #({#1, #2}))
+- [ ] constructors
 - [ ] |> operator
 - [ ] Match case
 - [ ] RAII
-- [ ] Iterator variable step size (or even multiplying,... step size)
+- [ ] range variable target boundry & step size (or even multiplying,... step size)
 - [ ] VSCode extension
+- [ ] Conventions
+
+### Parser
+
+- [ ] vars
+- [ ] functions
+- [ ] classes
+- [ ] enums
+- [ ] stack allocation
 
 ## TODO later
 
-- [ ] alternative to step (in loops) in iterators
-- [ ] Conventions
+- [ ] ASM
+- [ ] class props
 - [ ] dynamic linking
 - [ ] disallow direct comparison of floating point numbers (use tolerance)
 - [ ] generators

@@ -66,12 +66,18 @@ BREAK: 'break';
 CONTINUE: 'continue';
 YIELD: 'yield';
 RET: 'ret' | '=>';
+TRICKLE: 'trickle' | '~>';
 JMP: 'jmp';
 MUT: 'mut';
 PUB: 'pub';
 PRO: 'pro';
+STATIC: 'static';
+VIRTUAL: 'virtual';
+OVERRIDE: 'override';
+ABSTRACT: 'abstract';
 
 /* Operators */
+IS: 'is';
 NEW: 'new';
 UNIQUE: 'unique';
 SHARED: 'shared';

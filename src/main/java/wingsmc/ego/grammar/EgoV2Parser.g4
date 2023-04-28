@@ -4,51 +4,83 @@ options {
     tokenVocab = EgoV2Lexer;
 }
 
-moduleFile: moduleDef? importDefinition? moduleMemberDefinition* EOF;
+// TODO macros
+// TODO literal modifiers eg. 9u
 
-moduleDef: MODULE ID;
+moduleFile:
+    moduleDef?
+    importDefinition?
+    exportDefinition?
+    moduleMemberDefinition*
+    EOF;
+
+moduleDef: accessModifer? MODULE ID?;
+importDefinition: IMPORT importBlock;
+exportDefinition: EXPORT exportBlock;
 moduleMemberDefinition
-    : functionDeclaration
+    : field
+    | functionDeclaration
     | classDeclaration
+    | interfaceDeclaration
+    | implementDeclaration
     | useStmt
     ;
+useStmt: USE ID ASSIGN scopedIdentifier;
+functionDeclaration: accessModifer? behaviourModifier* typeName? ID lambdaExpr;
+classDeclaration: accessModifer? behaviourModifier* CLASS ID LCURLY
+    (constructorDeclartation | functionDeclaration | field)*
+    RCURLY;
+interfaceDeclaration: accessModifer? INTERFACE ID LCURLY
+    (functionDeclaration | functionHeader)*
+    RCURLY;
+implementDeclaration: accessModifer? scopedIdentifier IMPL scopedIdentifier LCURLY
+    functionDeclaration*
+    RCURLY;
 
 accessModifer
     : PUB
     | PRO
+    ;
+behaviourModifier
+    : STATIC
+    | VIRTUAL
+    | OVERRIDE
+    | ABSTRACT
     ;
 typeModifier
     : AT
     | TAG
     ;
 
-scopedIdentifier: (ID (STATIC_ACCESS_OP ID)* | (STATIC_ACCESS_OP ID)+) | THIS;
-typeName: MUT? (typeModifier MUT?)* (scopedIdentifier | VAR | toupleTypeDef);
-field: accessModifer? (typeName ID | THIS);
+scopedIdentifier
+    : ID (STATIC_ACCESS_OP ID)* 
+    | THIS
+    ;
+globalScopeIdentifier: (STATIC_ACCESS_OP ID)+;
+typeName: MUT? (typeModifier MUT?)*
+    (scopedIdentifier | VAR | toupleTypeDef);
+field: accessModifer? behaviourModifier* (typeName ID | THIS);
 
-importDefinition: IMPORT importBlock;
 importBlock: LCURLY importItem* RCURLY;
-importItem: scopedIdentifier (AS ID)? importBlock?;
+importItem: (scopedIdentifier | globalScopeIdentifier)
+    (AS scopedIdentifier)? importBlock? COMMA?;
+exportBlock: LCURLY exportItem* RCURLY;
+exportItem: scopedIdentifier (AS scopedIdentifier)? COMMA?;
 
-useStmt: USE ID ASSIGN scopedIdentifier;
-
-lambdaExpr: functionParameters (blockStmt | returnStmt);
-functionDeclaration: accessModifer? typeName? ID lambdaExpr;
-
-classDeclaration: accessModifer? CLASS ID toupleWithNamedFields;
-// TODO interface & export & implementation
+lambdaExpr: typeName? functionParameters (blockStmt | returnStmt);
+functionHeader: typeName? ID functionParameters;
+constructorDeclartation: accessModifer? lambdaExpr;
 
 toupleTypeDef: LCURLY scopedIdentifierList? RCURLY;
-toupleWithNamedFields: LCURLY commaSeparatedFieldList? RCURLY;
 functionParameters: LPAREN commaSeparatedFieldList? RPAREN;
-scopedIdentifierList:    scopedIdentifier (COMMA scopedIdentifier)* COMMA?;
+scopedIdentifierList: scopedIdentifier (COMMA scopedIdentifier)* COMMA?;
 commaSeparatedFieldList: field (COMMA field)* COMMA?;
+
 assignment: ASSIGN expr;
 
 tag: TAG ID;
 returnStmt: RET expr;
 blockStmt: LCURLY (stmt SEMI?)* RCURLY;
-variableDefinitionStmt: typeName ID;
 stmt
     : blockStmt                                     #block
     | useStmt                                       #use
@@ -62,11 +94,10 @@ stmt
     | FOR tag? MUT? ID IN expr (SEMI ID)? blockStmt #for
     | WHILE tag? expr blockStmt                     #while
     | DO tag? blockStmt WHILE expr SEMI             #dowhile
-    | variableDefinitionStmt assignment?            #varDef
+    | typeName ID assignment?                       #varDef
     | expr                                          #exprStmt
     ;
 
-// TODO literal modifier eg. 9u
 exprList: expr (COMMA expr)* COMMA?;
 stringContent
     : STR_EXPR_START expr RCURLY
@@ -76,64 +107,66 @@ stringContent
     | STR_ESCAPED_CHAR
     ;
 literalExpr
-    : QUOTE_OPEN stringContent* QUOTE_CLOSE       #singleLineStringLit
-    | BACKTICK_OPEN stringContent* BACKTICK_CLOSE #multiLineStringLit
-    | LIT_INT                                     #int
-    | LIT_DOUBLE                                  #double
-    | LIT_NULL                                    #null
-    | LIT_CHAR                                    #char
-    | (LIT_TRUE | LIT_FALSE)                      #bool
+    : QUOTE_OPEN stringContent* QUOTE_CLOSE         #singleLineStringLit
+    | BACKTICK_OPEN stringContent* BACKTICK_CLOSE   #multiLineStringLit
+    | LIT_INT                                       #int
+    | LIT_DOUBLE                                    #double
+    | LIT_NULL                                      #null
+    | LIT_CHAR                                      #char
+    | (LIT_TRUE | LIT_FALSE)                        #bool
     ;
 expr
     // Basic values
-    : literalExpr                                #literal
-    | scopedIdentifier                           #id
-    | LSQUARE expr SEMI exprList? RSQUARE        #array
-    | LSQUARE exprList? RSQUARE                  #list
-    | LCURLY expr (COMMA expr)* COMMA? RCURLY    #touple
-    | expr RANGE ASSIGN? expr                    #range
+    : literalExpr                                   #literal
+    | scopedIdentifier                              #id
+    | LSQUARE expr SEMI exprList? RSQUARE           #array
+    | LSQUARE exprList? RSQUARE                     #list
+    | LCURLY expr (COMMA expr)* COMMA? RCURLY       #touple
     | IF expr (blockStmt | expr)
-        (ELSE (blockStmt | expr))?               #if
-    | TAG LPAREN expr RPAREN                     #lambdaShorthand
-    | TAG LIT_INT                                #lambdaShorthandParam
+        (ELSE (blockStmt | expr))?                  #if
+    | lambdaExpr                                    #lambda
+    | TAG LPAREN expr RPAREN                        #lambdaShorthand
+    | TAG LIT_INT                                   #lambdaShorthandParam
     // Operators
-    | LPAREN expr RPAREN                         #parensOp
-    | expr ACCESS_OP ID                          #accessOp
-    | (NEW | SHARED | UNIQUE | DELETE) expr      #memoryOp
-    | <assoc= right> AT expr                     #derefOp
-    | expr LSQUARE expr RSQUARE                  #indexOp
-    | expr LPAREN exprList? RPAREN               #fnCallOp
-    | <assoc= right> TAG expr                    #addrOp
+    | LPAREN expr RPAREN                            #parensOp
+    | expr RANGE ASSIGN? expr                       #range
+    | expr ACCESS_OP ID                             #accessOp
+    | (NEW | SHARED | UNIQUE | DELETE) expr         #memoryOp
+    | <assoc= right> AT expr                        #derefOp
+    | MUT expr                                      #mutOp
+    | expr LSQUARE expr RSQUARE                     #indexOp
+    | expr LPAREN exprList? RPAREN                  #fnCallOp
+    | <assoc= right> TAG expr                       #addrOp
     |   ( INCREMENT | DECREMENT
         | BIN_FLIP | LOGIC_FLIP
-        ) expr                                   #unaryAssignmentOp
-    | <assoc= right> expr EXP expr               #mathHighOp
-    |   ( MUT
-        | MINUS
+        ) expr                                      #unaryAssignmentOp
+    | <assoc= right> expr EXP expr                  #mathHighOp
+    |   ( MINUS
         | BIN_NOT | LOGIC_NOT
         | ENDIAN_BIT_SWAP | ENDIAN_BYTE_SWAP
-        ) expr                                   #unaryOp
-    | expr (MUL | DIV | MOD) expr                #mathMidOp
-    | expr (PLUS | MINUS) expr                   #mathLowOp
+        ) expr                                      #unaryOp
+    | expr (MUL | DIV | MOD) expr                   #mathMidOp
+    | expr (PLUS | MINUS) expr                      #mathLowOp
     | expr
         ( SH1R | SH0R | SH1L | SH0L
         | ROTL | ROTR
-        ) expr                                   #bitMoveOp
+        ) expr                                      #bitMoveOp
     | expr
         ( AND | NAND
         | XOR | XNOR
         | OR  | NOR
-        ) expr                                   #bitwiseOp
+        ) expr                                      #bitwiseOp
     | expr
         ( SPACESHIP
         | LT | GT | LTE | GTE | EQ | NEQ
-        ) expr                                   #comparisonOp
+        ) expr                                      #comparisonOp
     | expr
         ( LOGIC_AND | LOGIC_NAND
         | LOGIC_XOR | LOGIC_XNOR
         | LOGIC_OR  | LOGIC_NOR
-        ) expr                                   #logicOp
-    | expr PIPE expr                             #pipe
+        ) expr                                      #logicOp
+    | expr PIPE expr                                #pipe
+    | expr IS scopedIdentifier                      #is
     // Assignment
     | <assoc= right> expr 
         ( EXP | MUL | DIV | MOD
@@ -146,8 +179,8 @@ expr
         | AND | NAND
         | XOR | XNOR
         | OR  | NOR
-        ) ASSIGN expr                            #assignOp
+        ) ASSIGN expr                               #assignOp
     | <assoc= right> expr
-        (LT | GT | NEQ) COLON expr               #assignComp
-    | <assoc= right> expr assignment             #assign
+        (LT | GT | NEQ) COLON expr                  #assignComp
+    | <assoc= right> expr assignment                #assign
     ;

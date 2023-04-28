@@ -1,37 +1,23 @@
-// Inline comment
-/**
-* Block comment
-*/
+module Functions
 
-test(Type t) {
-
-  loop {
-  }
-
-  for i in list {
-  }
-
-  for i in 0..10 step 2 {
-  }
-
-  for mut a in 0..100 mut step b {
-  }
-
-  var a = 10;
-  for a in var 0..b+100 step b {
-    if a instanceof i32 {
-      break;
+pub test(Type t) {
+  var a = 10
+  for a in 0..b+100 {
+    if a is i32 {
+      break
     }
-    continue;
+    continue
   }
 
-  var x: switch(a) {
-    b = x * y ** z ** w;
-    c = 10;
-    x - 2 {
-      e*: 10;
+  var b = 10;
+  var c = 20;
+  var x = when a {
+    b | c => x * y ** z ** w;
+    b..=2 {
+      a *= 10;
       ~>
     }
-    _ = e;
+
+    _ => e;
   }
 }

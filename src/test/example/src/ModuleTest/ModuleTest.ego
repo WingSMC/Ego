@@ -24,11 +24,30 @@ import {
 	::models
 }
 
-pub {string, i32} swapRadix(@i32 num) {
-	mut #i32 radix;
+export {
+	crypto::hash as ct::hash
 }
 
-class A {
-	i32 x,
-	str s,
+pub {string, i32} swapRadix(@i32 num) {
+	mut #i32 radix
+}
+
+pub class A {
+	i32 x
+	str s
+
+	pub (this, i32 x, str s) {
+		this.x = x
+		this.s = s
+	}
+}
+
+pub interface Printable {
+	print(this)
+}
+
+pub A impl Printable {
+	pub print(this) {
+		print(this.s)
+	}
 }
