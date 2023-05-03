@@ -6,7 +6,6 @@ module ModuleTest
 
 import {
 	std {
-		/* import print from std::io and use it as if it were in the global namespace */
 		io { print }
 		/* import everything from std::io::net and use it as if they were in the global namespace */
 		io::net as _
@@ -47,7 +46,7 @@ pub interface Printable {
 }
 
 pub A impl Printable {
-	pub print(this) {
+	print(this) {
 		print(this.s)
 	}
 }

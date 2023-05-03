@@ -1,0 +1,30 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "echo",
+			"type": "shell",
+			"command": "kotlinc main.kt -include-runtime -d main.jar",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "gradle build -x test",
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "run",
+			"type": "shell",
+			"command": "gradle run",
+			"problemMatcher": []
+		}
+	]
+}

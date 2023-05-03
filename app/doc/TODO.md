@@ -21,6 +21,7 @@
 
 ## TODO later
 
+- [ ] named arguments
 - [ ] ASM
 - [ ] class props
 - [ ] dynamic linking
