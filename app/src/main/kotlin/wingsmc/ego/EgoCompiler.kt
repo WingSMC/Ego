@@ -1,28 +1,41 @@
-package wingsmc.ego;
+package wingsmc.ego
 
-import org.antlr.v4.runtime.*
-import org.antlr.v4.runtime.tree.*
+import org.antlr.v4.runtime.CharStreams
+import org.antlr.v4.runtime.CommonTokenStream
+import wingsmc.ego.grammar.EgoV2Lexer
+import wingsmc.ego.grammar.EgoV2Parser
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.nio.file.Paths
+
+fun readAST(file: String): EgoV2Parser.ModuleFileContext? {
+    try {
+        val input = CharStreams.fromStream(FileInputStream(file))
+
+        val lexer = EgoV2Lexer(input)
+        val tokens = CommonTokenStream(lexer)
+        val parser = EgoV2Parser(tokens)
+
+        return parser.moduleFile()
+    } catch (e: FileNotFoundException) {
+        System.err.println("Invalid file path")
+    } catch (e: IOException) {
+        System.err.println("Couldn't process file")
+    }
+
+    return null
+}
 
 fun main(args: Array<String>) {
-    // Create an input stream from the input file
-    val input = CharStreams.fromFileName("input.txt")
+    val visitor = EgoVisitor("Test")
+    val ast = readAST("ModuleTest.ego")
 
-    // Create a lexer that reads from the input stream
-    val lexer = EgoLexer(input)
+    if (ast == null) {
+        System.err.println("Couldn't parse file")
+        return
+    }
 
-    // Create a token stream from the lexer
-    val tokens = CommonTokenStream(lexer)
-
-    // Create a parser that reads from the token stream
-    val parser = MyGrammarParser(tokens)
-
-    // Parse the input file and get the root of the parse tree
-    val tree = parser.myRule()
-
-    // Create a visitor and visit the parse tree
-    val visitor = MyVisitor()
-    val result = visitor.visit(tree)
-
-    // Do something with the visitor's result
-    println(result)
+    visitor.visit(ast)
+    println(visitor.getLLVM())
 }
