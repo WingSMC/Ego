@@ -1,7 +1,11 @@
 package wingsmc.ego
 
+import wingsmc.ego.types.EgoType
+import wingsmc.ego.types.EgoTypes
+
 open class EgoScope(val parent: EgoScope? = null) {
     private val symbols = HashMap<String, EgoSymbol>()
+    private var types: EgoTypes = EgoTypes(parent?.types ?: EgoTypes.globalTypes)
 
     open fun getSymbol(name: String): EgoSymbol? = symbols[name] ?: parent?.getSymbol(name)
 
@@ -14,6 +18,8 @@ open class EgoScope(val parent: EgoScope? = null) {
         symbols[name] = symbol
         return true
     }
+
+    fun getType(name: String): EgoType? = types.getType(name)
 
     override fun toString(): String {
         val builder = StringBuilder()

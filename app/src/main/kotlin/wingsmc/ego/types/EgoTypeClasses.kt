@@ -1,7 +1,9 @@
 package wingsmc.ego.types
 
 enum class EgoTypeClasses {
-    FIELD,
+    BASIC,
+    REFERENCE,
+    POINTER,
     FUNCTION,
     CLASS,
 }

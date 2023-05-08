@@ -60,9 +60,7 @@ class EgoModuleVisitor(private val name: String) : EgoV2ParserBaseVisitor<Any?>(
         val classScope = scope.getScope(classID) as EgoNamespaceScope
         val interfaceScope = scope.getScope(interfaceID) as EgoNamespaceScope
 
-
         return super.visitImplementDeclaration(ctx)
-
     }
 
     override fun visitFunctionDeclaration(ctx: EgoV2Parser.FunctionDeclarationContext): Any? {
@@ -74,18 +72,36 @@ class EgoModuleVisitor(private val name: String) : EgoV2ParserBaseVisitor<Any?>(
             return null
         }
 
+        val returnTypeName = ctx.typeName().scopedIdentifier().text
+        val returnType = scope.getType(returnTypeName)
+
+        if (returnType == null) {
+            println("Return type $returnTypeName does not exist @ ${scope.scopeName}::$functionID")
+            return null
+        }
+
+        val paramTypes = ctx.lambdaExpr()
+                .functionParameters()
+                .commaSeparatedFieldList()
+                .field()
+                .map {
+                    val typeName = it.typeName().scopedIdentifier().text;
+                    val type = scope.getType(typeName)
+                    if (type == null) {
+                        println("Parameter type $typeName does not exist @ ${scope.scopeName}::$functionID")
+                        return@visitFunctionDeclaration null
+                    }
+                    type
+                }
+
         scope.addSymbol(
             functionID,
             EgoSymbol(functionID, EgoFunctionType(
-                functionID,
-                ArrayList<EgoType>()
+                returnType,
+                paramTypes,
             ), visibility)
         )
 
-        return super.visitFunctionDeclaration(ctx)
+        return null
     }
-
-    /*
-     * Visit leaves
-     */
 }

@@ -25,8 +25,8 @@ behaviourModifier
     | ABSTRACT
     ;
 typeModifier
-    : AT
-    | TAG
+    : AT  // dereference / reference
+    | TAG // address of  / pointer
     ;
 
 moduleDef: accessModifer? MODULE;
