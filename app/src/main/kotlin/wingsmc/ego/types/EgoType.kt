@@ -1,6 +1,6 @@
 package wingsmc.ego.types
 
-data class EgoType(val name: String) {
+open class EgoType(val name: String) {
     private val parents = HashSet<EgoType>()
 
     fun isCompatible(other: EgoType): Boolean {

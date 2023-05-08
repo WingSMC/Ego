@@ -1,6 +1,6 @@
 package wingsmc.ego
 
-open class EgoScope(private val parent: EgoScope? = null) {
+open class EgoScope(val parent: EgoScope? = null) {
     private val symbols = HashMap<String, EgoSymbol>()
 
     open fun getSymbol(name: String): EgoSymbol? = symbols[name] ?: parent?.getSymbol(name)

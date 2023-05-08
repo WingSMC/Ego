@@ -8,13 +8,28 @@ options {
 // TODO literal modifiers eg. 9u
 
 moduleFile:
-    moduleDef?
+    moduleDef
     importDefinition?
     exportDefinition?
     moduleMemberDefinition*
     EOF;
 
-moduleDef: accessModifer? MODULE ID?;
+accessModifer
+    : PUB
+    | PRO
+    ;
+behaviourModifier
+    : STATIC
+    | VIRTUAL
+    | OVERRIDE
+    | ABSTRACT
+    ;
+typeModifier
+    : AT
+    | TAG
+    ;
+
+moduleDef: accessModifer? MODULE;
 importDefinition: IMPORT importBlock;
 exportDefinition: EXPORT exportBlock;
 moduleMemberDefinition
@@ -33,24 +48,10 @@ classDeclaration: accessModifer? behaviourModifier* CLASS ID LCURLY
 interfaceDeclaration: accessModifer? INTERFACE ID LCURLY
     (functionDeclaration | functionHeader)*
     RCURLY;
-implementDeclaration: accessModifer? scopedIdentifier IMPL scopedIdentifier LCURLY
+implementDeclaration: accessModifer? scopedIdentifier IMPL VIRTUAL? scopedIdentifier LCURLY
     functionDeclaration*
     RCURLY;
 
-accessModifer
-    : PUB
-    | PRO
-    ;
-behaviourModifier
-    : STATIC
-    | VIRTUAL
-    | OVERRIDE
-    | ABSTRACT
-    ;
-typeModifier
-    : AT
-    | TAG
-    ;
 
 scopedIdentifier
     : ID (STATIC_ACCESS_OP ID)* 
@@ -59,7 +60,7 @@ scopedIdentifier
 globalScopeIdentifier: (STATIC_ACCESS_OP ID)+;
 typeName: MUT? (typeModifier MUT?)*
     (scopedIdentifier | VAR | toupleTypeDef);
-field: accessModifer? behaviourModifier* (typeName ID | THIS);
+field: accessModifer? behaviourModifier* (typeName ID | typeName? THIS);
 
 importBlock: LCURLY importItem* RCURLY;
 importItem: (scopedIdentifier | globalScopeIdentifier)

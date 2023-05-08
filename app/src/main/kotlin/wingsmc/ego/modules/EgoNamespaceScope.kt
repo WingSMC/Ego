@@ -3,7 +3,12 @@ package wingsmc.ego.modules
 import wingsmc.ego.EgoScope
 import wingsmc.ego.EgoSymbol
 
-class EgoNamespaceScope(val name: String, parent: EgoScope? = null)
+class EgoNamespaceScope(
+    val name: String,
+    val visibility: EgoVisibility,
+    val type: EgoNamespaceType,
+    parent: EgoNamespaceScope? = null
+)
     : EgoScope(parent)
     , java.io.Serializable
 {
@@ -24,4 +29,13 @@ class EgoNamespaceScope(val name: String, parent: EgoScope? = null)
         return super.getSymbol(name)
                 ?: children.values.firstNotNullOfOrNull { it.getSymbol(name) }
     }
+
+    val parentNamespace: EgoNamespaceScope?
+        get() = parent as EgoNamespaceScope?
+
+    val scopeName: String
+        get() {
+            val parentNs = parentNamespace
+            return if (parentNs == null) name else "${parentNs.scopeName}::$name"
+        }
 }

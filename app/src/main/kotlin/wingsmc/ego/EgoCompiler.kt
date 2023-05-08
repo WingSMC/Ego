@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wingsmc.ego.grammar.EgoV2Lexer
 import wingsmc.ego.grammar.EgoV2Parser
+import wingsmc.ego.modules.EgoModuleVisitor
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -28,7 +29,7 @@ fun readAST(file: String): EgoV2Parser.ModuleFileContext? {
 }
 
 fun main(args: Array<String>) {
-    val visitor = EgoVisitor("Test")
+    val visitor = EgoModuleVisitor("Test")
     val ast = readAST("ModuleTest.ego")
 
     if (ast == null) {
@@ -37,5 +38,5 @@ fun main(args: Array<String>) {
     }
 
     visitor.visit(ast)
-    println(visitor.getLLVM())
+    println(visitor)
 }
