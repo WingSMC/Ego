@@ -23,11 +23,11 @@ open class EgoScope(val parent: EgoScope? = null) {
 
     override fun toString(): String {
         val builder = StringBuilder()
-        symbols.forEach { (name, symbol) ->
+        symbols.forEach { (_, symbol) ->
             builder.append("\t$symbol\n")
         }
         builder.append("----------------------\n")
-        builder.append(parent.toString())
+        builder.append(parent)
         return builder.toString()
     }
 }

@@ -27,7 +27,7 @@ export {
 	crypto::hash as ct::hash
 }
 
-pub {string, i32} swapRadix(@i32 num) {
+pub {str, i32} swapRadix(@i32 num) {
 	mut #i32 radix
 }
 

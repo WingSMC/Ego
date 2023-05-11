@@ -28,6 +28,7 @@ typeModifier
     : AT  // dereference / reference
     | TAG // address of  / pointer
     ;
+mutAndTypeModifiers: (MUT? typeModifier)+;
 
 moduleDef: accessModifer? MODULE;
 importDefinition: IMPORT importBlock;
@@ -53,14 +54,19 @@ implementDeclaration: accessModifer? scopedIdentifier IMPL VIRTUAL? scopedIdenti
     RCURLY;
 
 
+scopedTypeIdentifier
+    : ID (STATIC_ACCESS_OP ID)*
+    | VAR
+    ;
 scopedIdentifier
     : ID (STATIC_ACCESS_OP ID)* 
     | THIS
     ;
 globalScopeIdentifier: (STATIC_ACCESS_OP ID)+;
-typeName: MUT? (typeModifier MUT?)*
-    (scopedIdentifier | VAR | toupleTypeDef);
+typeName: mutAndTypeModifiers? MUT? (scopedTypeIdentifier | toupleTypeDef);
+
 field: accessModifer? behaviourModifier* (typeName ID | typeName? THIS);
+parameter: typeName ID | AT MUT? THIS;
 
 importBlock: LCURLY importItem* RCURLY;
 importItem: (scopedIdentifier | globalScopeIdentifier)
@@ -68,15 +74,13 @@ importItem: (scopedIdentifier | globalScopeIdentifier)
 exportBlock: LCURLY exportItem* RCURLY;
 exportItem: scopedIdentifier (AS scopedIdentifier)? COMMA?;
 
-lambdaExpr: typeName? functionParameters (blockStmt | returnStmt);
-functionHeader: typeName? ID functionParameters;
+lambdaExpr: functionParameters (blockStmt | returnStmt);
+functionHeader: accessModifer? typeName? ID functionParameters;
 constructorDeclartation: accessModifer? lambdaExpr;
 
-toupleTypeDef: LCURLY scopedIdentifierList? RCURLY;
-functionParameters: LPAREN commaSeparatedFieldList? RPAREN;
-scopedIdentifierList: scopedIdentifier (COMMA scopedIdentifier)* COMMA?;
-commaSeparatedFieldList: field (COMMA field)* COMMA?;
-
+toupleTypeDef: LCURLY scopedTypeIdentifierList? RCURLY;
+functionParameters: LPAREN (parameter (COMMA parameter)* COMMA?)? RPAREN;
+scopedTypeIdentifierList: scopedTypeIdentifier (COMMA scopedTypeIdentifier)* COMMA?;
 assignment: ASSIGN expr;
 
 tag: TAG ID;
@@ -167,7 +171,7 @@ expr
         | LOGIC_OR  | LOGIC_NOR
         ) expr                                      #logicOp
     | expr PIPE expr                                #pipe
-    | expr IS scopedIdentifier                      #is
+    | expr IS scopedTypeIdentifier                  #is
     // Assignment
     | <assoc= right> expr 
         ( EXP | MUL | DIV | MOD

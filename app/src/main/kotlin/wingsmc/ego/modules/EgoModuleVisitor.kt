@@ -5,6 +5,7 @@ import wingsmc.ego.grammar.EgoV2Parser
 import wingsmc.ego.grammar.EgoV2ParserBaseVisitor
 import wingsmc.ego.types.EgoFunctionType
 import wingsmc.ego.types.EgoType
+import wingsmc.ego.types.EgoTypes
 
 class EgoModuleVisitor(private val name: String) : EgoV2ParserBaseVisitor<Any?>() {
     private lateinit var scope: EgoNamespaceScope
@@ -68,24 +69,18 @@ class EgoModuleVisitor(private val name: String) : EgoV2ParserBaseVisitor<Any?>(
         val functionID = ctx.ID().text
 
         if (scope.type == EgoNamespaceType.INTERFACE && visibility == EgoVisibility.PROTECTED) {
-            println("Interface functions can only be public @ ${scope.scopeName}::$functionID")
+            System.err.println("Interface functions can only be public @ ${scope.scopeName}::$functionID")
             return null
         }
 
-        val returnTypeName = ctx.typeName().scopedIdentifier().text
-        val returnType = scope.getType(returnTypeName)
-
-        if (returnType == null) {
-            println("Return type $returnTypeName does not exist @ ${scope.scopeName}::$functionID")
-            return null
-        }
+        val typeNameCtx = ctx.typeName()
+        val returnType = validateReturnType(typeNameCtx, functionID)
 
         val paramTypes = ctx.lambdaExpr()
                 .functionParameters()
-                .commaSeparatedFieldList()
-                .field()
+                .parameter()
                 .map {
-                    val typeName = it.typeName().scopedIdentifier().text;
+                    val typeName = it.typeName().scopedTypeIdentifier().text;
                     val type = scope.getType(typeName)
                     if (type == null) {
                         println("Parameter type $typeName does not exist @ ${scope.scopeName}::$functionID")
@@ -103,5 +98,34 @@ class EgoModuleVisitor(private val name: String) : EgoV2ParserBaseVisitor<Any?>(
         )
 
         return null
+    }
+
+    override fun visitFunctionHeader(ctx: EgoV2Parser.FunctionHeaderContext): Any? {
+        val visibility = EgoVisibility.getAccessFromContext(ctx.accessModifer())
+        val functionID = ctx.ID().text
+
+        if (scope.type == EgoNamespaceType.INTERFACE && visibility == EgoVisibility.PROTECTED) {
+            println("Interface functions can only be public @ ${scope.scopeName}::$functionID")
+            return null
+        }
+
+        val typeNameCtx = ctx.typeName()
+        val returnType = validateReturnType(typeNameCtx, functionID)
+
+        return super.visitFunctionHeader(ctx)
+    }
+
+    private fun validateReturnType (returnTypeNameCtx: EgoV2Parser.TypeNameContext?, tokenID: String): EgoType {
+        return if (returnTypeNameCtx == null) {
+            EgoTypes.VOID
+        } else {
+            val returnTypeName = (returnTypeNameCtx.scopedTypeIdentifier() ?: returnTypeNameCtx.toupleTypeDef()).text
+            val type = scope.getType(returnTypeName)
+            if (type == null) {
+                System.err.println("Return type $returnTypeName does not exist @ ${scope.scopeName}::$tokenID")
+                return EgoTypes.ERROR_TYPE
+            }
+            type
+        }
     }
 }

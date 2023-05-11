@@ -2,51 +2,52 @@
 * Documentation
 */
 
-module ModuleTest
+pub module
 
-import {
-	std {
-		io { print }
-		/* import everything from std::io::net and use it as if they were in the global namespace */
-		io::net as _
-		/* import std::collections as coll and also import it's List as List */
-		collections as coll { List }
-		/* use as math::cos */
-		math::cos
-		/* these two are the same */
-		math::crypto as crypto
-		math {
-			crypto
-		}
-	}
-	/* Import the current project's models module (src/models) */
-	::models
-}
+//import {
+//	std {
+//		io { print }
+//		/* import everything from std::io::net and use it as if they were in the global namespace */
+//		io::net as _
+//		/* import std::collections as coll and also import it's List as List */
+//		collections as coll { List }
+//		/* use as math::cos */
+//		math::cos
+//		/* these two are the same */
+//		math::crypto as crypto
+//		math {
+//			crypto
+//		}
+//	}
+//	/* Import the current project's models module (src/models) */
+//	::models
+//}
 
-export {
-	crypto::hash as ct::hash
-}
+//export {
+//	crypto::hash as ct::hash
+//}
 
-pub {string, i32} swapRadix(@i32 num) {
-	mut #i32 radix
-}
+//pub {str, i32} swapRadix(@i32 num) {
+//	mut #i32 radix
+//}
 
-pub class A {
-	i32 x
-	str s
-
-	pub (this, i32 x, str s) {
-		this.x = x
-		this.s = s
-	}
-}
+//pub class A {
+//	i32 x
+//	str s
+//
+//	pub (@mut this, i32 x, str s) {
+//		this.x = x
+//		this.s = s
+//	}
+//}
 
 pub interface Printable {
-	print(this)
+	ix print(@this)
+	printDebug(@this) {}
 }
 
-pub A impl Printable {
-	print(this) {
-		print(this.s)
-	}
-}
+//pub A impl Printable {
+//	print(this) {
+//		print(this.s)
+//	}
+//}
