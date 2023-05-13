@@ -2,10 +2,10 @@ package wingsmc.ego.types
 
 class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
     companion object {
-        val instance: EgoTypes = EgoTypes(null);
+        val instance: EgoTypes = EgoTypes(null)
         val ERROR_TYPE = EgoType("error", 0u)
         val NULL = EgoType("null", 1u)
-        val VOID = EgoType("void", 0u);
+        val VOID = EgoType("void", 0u)
 
         init {
             instance.types["error"] = ERROR_TYPE
