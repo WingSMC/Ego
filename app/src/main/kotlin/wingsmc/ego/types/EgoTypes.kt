@@ -3,27 +3,27 @@ package wingsmc.ego.types
 class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
     companion object {
         val instance: EgoTypes = EgoTypes(null);
-        val ERROR_TYPE = EgoType("error")
-        val NULL = EgoType("null")
-        val VOID = EgoType("void");
+        val ERROR_TYPE = EgoType("error", 0u)
+        val NULL = EgoType("null", 1u)
+        val VOID = EgoType("void", 0u);
 
         init {
             instance.types["error"] = ERROR_TYPE
             instance.addPrimitiveType(VOID)
             instance.addPrimitiveType(NULL)
 
-            val BOOL = EgoType("bool")
-            val CHAR = EgoType("char")
-            val FLOAT = EgoType("float")
-            val DOUBLE = EgoType("double")
-            val I8 = EgoType("i8")
-            val I16 = EgoType("i16")
-            val I32 = EgoType("i32")
-            val I64 = EgoType("i64")
-            val U8 = EgoType("u8")
-            val U16 = EgoType("u16")
-            val U32 = EgoType("u32")
-            val U64 = EgoType("u64")
+            val BOOL = EgoType("bool", 1u)
+            val CHAR = EgoType("char", 1u)
+            val FLOAT = EgoType("float", 1u)
+            val DOUBLE = EgoType("double", 8u)
+            val I8 = EgoType("i8", 1u)
+            val I16 = EgoType("i16", 2u)
+            val I32 = EgoType("i32", 4u)
+            val I64 = EgoType("i64", 8u)
+            val U8 = EgoType("u8", 1u)
+            val U16 = EgoType("u16", 2u)
+            val U32 = EgoType("u32", 4u)
+            val U64 = EgoType("u64", 8u)
 
             BOOL.addParent(U8)
             CHAR.addParent(U8)
@@ -48,8 +48,7 @@ class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
             instance.addPrimitiveType(U32)
             instance.addPrimitiveType(U64)
 
-            instance.addComplexType(EgoType("str"))
-            instance.addComplexType(EgoType("list"))
+            instance.addComplexType(EgoType("str", 1u))
         }
 
         val globalTypes: EgoTypes

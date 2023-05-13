@@ -46,7 +46,7 @@ pub interface Printable {
 }
 
 pub A impl Printable {
-	print(this) {
-		print(this.s)
+	print(@this) {
+		printf(this.s)
 	}
 }
