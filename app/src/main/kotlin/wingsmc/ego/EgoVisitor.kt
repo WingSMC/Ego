@@ -3,6 +3,7 @@ package wingsmc.ego
 import wingsmc.ego.grammar.EgoBaseVisitor
 import wingsmc.ego.grammar.EgoParser.*
 
+
 data class Result(val type: String, val register: String, val instructions: String) {
     override fun toString(): String {
         return "$type $register"
@@ -17,17 +18,13 @@ class EgoVisitor: EgoBaseVisitor<Result>() {
 
     override fun visitProg(ctx: ProgContext): Result {
         val functionDefinitions = ctx.functionDefinition().map { visit(it) }
+        val instructions = StringBuilder()
+        instructions.append("source_filename = \"ModuleTest.ego\"\n")
+        // instructions.append("target triple = \"x86_64-pc-linux-gnu\"\n")
+        // instructions.append("target datalayout = \"e-m:e-i64:64-f80:128-n8:16:32:64-S128\"\n")
+        functionDefinitions.forEach { instructions.append(it.instructions) }
 
-        return Result(
-            "",
-            "",
-            """
-            source_filename = "ModuleTest.ego"
-            target triple = "x86_64-pc-linux-gnu"
-            target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
-            ${functionDefinitions.joinToString("\n") { it.instructions }}
-            """.trimIndent()
-        )
+        return Result("", "", instructions.toString())
     }
 
     override fun visitFunctionDefinition(ctx: FunctionDefinitionContext): Result {
@@ -35,21 +32,15 @@ class EgoVisitor: EgoBaseVisitor<Result>() {
         val returnType = visit(ctx.type()).type
         val functionName = ctx.identifier().text
         val paramResults = ctx.parameter().map { visit(it) }
-        functionTypeMap[functionName] = FuncType(returnType, paramResults.map { it.instructions })
+        functionTypeMap[functionName] = FuncType(returnType, paramResults.map { it.type })
         val blockContent = visit(ctx.block())
         val params = paramResults.joinToString(", ")
-        val body =
-        """
-        define $returnType @$functionName($params) nounwind {
-        ${blockContent.instructions}
-        }
-        """.trimIndent()
+        val body = StringBuilder()
+        body.appendLine("define $returnType @$functionName($params) nounwind {")
+        body.appendLine(blockContent.instructions)
+        body.appendLine("}")
 
-        return Result(
-            returnType,
-            "@$functionName",
-            body,
-        )
+        return Result(returnType, "@$functionName", body.toString())
     }
 
     override fun visitParameter(ctx: ParameterContext): Result {
@@ -86,25 +77,24 @@ class EgoVisitor: EgoBaseVisitor<Result>() {
                 Result("void", "", "")
             else visit(expr)
 
+        // TODO: Check if return type matches function type
+
         return Result(
             v.type,
             v.register,
-            """
-            ${v.instructions}
-            ret ${v.type} ${v.register}
-            """.trimIndent()
+            "${v.instructions}  ret $v"
         )
     }
 
     override fun visitBlock(ctx: BlockContext): Result {
         val results = ctx.statement().map { visit(it) }
         if (results.isEmpty()) {
-            throw Exception("Empty block @ line ${ctx.start.line}")
+            System.err.println("Empty block @ line ${ctx.start.line}")
         }
         return Result(
             results.last().type,
             results.last().register,
-            results.joinToString("\n") { it.instructions }
+            results.joinToString() { it.instructions }
         )
     }
 
@@ -118,23 +108,31 @@ class EgoVisitor: EgoBaseVisitor<Result>() {
         val falseLabel = instructionCounter++
         val falseBranch = visit(ctx.statement(1))
         val endLabel = instructionCounter++
+        val result = "%${instructionCounter++}"
         val type = trueBranch.type;
+
+        val instructions = StringBuilder()
+        if (condition.instructions.isNotEmpty()) {
+            instructions.append(condition.instructions)
+        }
+        instructions.appendLine("  br i1 ${condition.register}, label %$trueLabel, label %$falseLabel\n")
+        instructions.appendLine("  ; <label>:$trueLabel")
+        if (trueBranch.instructions.isNotEmpty()) {
+            instructions.append(trueBranch.instructions)
+        }
+        instructions.appendLine("  br label %$endLabel\n")
+        instructions.appendLine("  ; <label>:$falseLabel")
+        if (falseBranch.instructions.isNotEmpty()) {
+            instructions.append(falseBranch.instructions)
+        }
+        instructions.appendLine("  br label %$endLabel\n")
+        instructions.appendLine("  ; <label>:$endLabel")
+        instructions.appendLine("  $result = phi $type [${trueBranch.register}, %$trueLabel], [${falseBranch.register}, %$falseLabel]")
 
         return Result(
             type,
-            "%$instructionCounter",
-            """
-            ${condition.instructions}
-            br i1 ${condition.register}, label %$trueLabel, label %$falseLabel
-            ; <label>:$trueLabel
-            ${trueBranch.instructions}
-            br label %$endLabel
-            ; <label>:$falseLabel
-            ${falseBranch.instructions}
-            br label %$endLabel
-            ; <label>:$endLabel
-            phi $type [${trueBranch.register}, %$trueLabel], [${falseBranch.register}, %$falseLabel]
-            """.trimIndent()
+            result,
+            instructions.toString()
         )
     }
 
@@ -203,14 +201,27 @@ class EgoVisitor: EgoBaseVisitor<Result>() {
         val functionType = functionTypeMap[functionName] ?: throw Error("Function $functionName not found")
         val argList = ctx.expression().map { visit(it) }
         val register = "%${instructionCounter++}"
+        val instructions = StringBuilder()
+        argList.forEach {
+            if (it.instructions.isNotEmpty()) {
+                instructions.append(it.instructions)
+            }
+        }
+        if (argList.size != functionType.params.size) {
+            throw Error("Function $functionName expects ${functionType.params.size} arguments, got ${argList.size}")
+        }
+        argList.forEachIndexed { index, arg ->
+            if (arg.type != functionType.params[index]) {
+                throw Error("Function $functionName expects argument ${index + 1} to be of type ${functionType.params[index]}, got ${arg.type}")
+            }
+        }
+        instructions.appendLine("  $register = call ${functionType.returnType} @$functionName(${argList.joinToString(", ")})")
 
         return Result(
             functionType.returnType,
             register,
-            """
-            ${argList.joinToString("\n") { it.instructions }}
-            $register = call ${functionType.returnType} @$functionName(${argList.joinToString(", ")})
-            """.trimIndent())
+            instructions.toString(),
+        )
     }
 
     override fun visitId(ctx: IdContext): Result {
@@ -227,13 +238,11 @@ class EgoVisitor: EgoBaseVisitor<Result>() {
 
     private fun binaryExpression(op: String, left: Result, right: Result, type: String): Result {
         val register = "%${instructionCounter++}"
-        return Result(
-            type,
-            register,
-            """
-            ${left.instructions}
-            ${right.instructions}
-            $register = $op ${left.type} ${left.register}, ${right.register}
-            """.trimIndent())
+        val instructions = StringBuilder()
+        if (left.instructions.isNotEmpty()) instructions.append(left.instructions)
+        if (right.instructions.isNotEmpty()) instructions.append(right.instructions)
+        instructions.appendLine("  $register = $op ${left.type} ${left.register}, ${right.register}")
+
+        return Result(type, register, instructions.toString())
     }
 }
