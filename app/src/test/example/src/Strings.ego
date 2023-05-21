@@ -1,17 +1,17 @@
-module Strings
+public module
 
-string a: "asd"
-string b: "$asd"
-string c: "${a}sd"
-string d: "\$$asd"
-string e: `asd`
-string f: `$asd`
-string s: #@`
+var a = "asd"
+mut var b = "$asd"
+var c = "${a}sd"
+var d = "\$$asd"
+var e = `asd`
+var f = `$asd`
+var s = `
 	$var      sometext
 	${a + b}  $$text
 `
-string h: `"\$"`
-string i: #`Hello,
+var h = `"\$"`
+var i = `Hello,
 	World!`
-string j: `a"Hello"`
-string l
+var j = `a"Hello"`
+str l

@@ -4,7 +4,7 @@ import wingsmc.ego.EgoScope
 import wingsmc.ego.EgoSymbol
 
 class EgoNamespaceScope(
-    val name: String,
+    private val name: String,
     val visibility: EgoVisibility,
     val type: EgoNamespaceType,
     parent: EgoNamespaceScope? = null
@@ -12,10 +12,10 @@ class EgoNamespaceScope(
     : EgoScope(parent)
     , java.io.Serializable
 {
-    private val children = HashMap<String, EgoScope>()
+    private val children = HashMap<String, EgoNamespaceScope>()
 
     fun getScope(name: String): EgoScope? = children[name]
-    fun addScope(name: String, scope: EgoScope): Boolean {
+    fun addScope(name: String, scope: EgoNamespaceScope): Boolean {
         if (children.containsKey(name)) {
             println("Scope $name already exists in this namespace")
             return false

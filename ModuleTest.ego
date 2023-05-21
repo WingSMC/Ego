@@ -27,9 +27,13 @@ pub module
 //	crypto::hash as ct::hash
 //}
 
-//pub {str, i32} swapRadix(@i32 num) {
-//	mut #i32 radix
-//}
+u62 factorial(u8 in) {
+	ret	if (in <= 1) {
+		1
+	} else {
+		in * factorial(in - 1)
+	}
+}
 
 //pub class A {
 //	i32 x

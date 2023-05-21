@@ -6,9 +6,9 @@ import wingsmc.ego.types.EgoType
 open class EgoSymbol(
         private val name: String,
         private val type: EgoType,
-        val visibility: EgoVisibility
+        val visibility: EgoVisibility = EgoVisibility.LOCAL
 ) {
     override fun toString(): String {
-        return "$name: $type"
+        return "$visibility $name: $type"
     }
 }

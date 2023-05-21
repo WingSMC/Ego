@@ -15,18 +15,4 @@ enum class EgoVisibility {
     LOCAL {
         override fun toString(): String = "loc"
     };
-
-    companion object {
-        fun getAccessFromContext(ctx: EgoV2Parser.AccessModiferContext?): EgoVisibility {
-            if (ctx == null) {
-                return PRIVATE
-            }
-
-            return when (ctx.text) {
-                "pub" -> PUBLIC
-                "pro" -> PROTECTED
-                else -> PRIVATE
-            }
-        }
-    }
 }

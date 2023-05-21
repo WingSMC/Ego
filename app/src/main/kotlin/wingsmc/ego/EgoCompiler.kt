@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream
 import wingsmc.ego.grammar.EgoV2Lexer
 import wingsmc.ego.grammar.EgoV2Parser
+import wingsmc.ego.modules.EgoModuleCache
 import wingsmc.ego.modules.EgoModuleVisitor
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -39,4 +40,6 @@ fun main(args: Array<String>) {
 
     visitor.visit(ast)
     println(visitor)
+
+    EgoModuleCache.save()
 }

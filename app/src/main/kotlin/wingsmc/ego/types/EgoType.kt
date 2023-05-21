@@ -14,11 +14,8 @@ open class EgoType(val name: String, val size: UInt) {
         this.parents.add(parent)
     }
 
-    val namespaceAsList: List<String>
-        get() = name.split("::")
-
-    open val typeClass: EgoTypeClasses
-        get() = EgoTypeClasses.BASIC
+    open val typeClass: EgoTypeClass
+        get() = EgoTypeClass.BASIC
 
     override fun toString(): String = name
 }

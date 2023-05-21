@@ -53,7 +53,6 @@ USE: 'use';
 INTERFACE: 'interface';
 IMPL: 'impl';
 THIS: 'this';
-VAR: 'var';
 LOOP: 'loop';
 WHILE: 'while';
 FOR: 'for';
@@ -140,6 +139,23 @@ LIT_FALSE: 'false';
 LIT_CHAR: '\'' (UNICODE_CHAR_LIT | ~[\\'] | '\\' .) '\'';
 BACKTICK_OPEN: ID? '`' -> pushMode(MultiLineString);
 QUOTE_OPEN: '"'        -> pushMode(LineString);
+
+/* Basic types */
+VAR: 'var';
+BOOL: 'bool';
+I8: 'i8';
+I16: 'i16';
+I32: 'i32';
+I64: 'i64';
+U8: 'u8';
+U16: 'u16';
+U32: 'u32';
+U64: 'u64';
+F32: 'f32';
+F64: 'f64';
+CHAR: 'char';
+STR: 'str';
+VOID: 'void';
 
 /* ID */
 ID: [a-zA-Z_][a-zA-Z0-9_]*;

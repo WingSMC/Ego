@@ -54,18 +54,33 @@ implementDeclaration: accessModifer? scopedIdentifier IMPL VIRTUAL? scopedIdenti
     RCURLY;
 
 
-scopedTypeIdentifier
-    : ID (STATIC_ACCESS_OP ID)*
-    | VAR
+scopedTypeIdentifier: ID (STATIC_ACCESS_OP ID)* | basicTypes;
+basicTypes
+    : VAR
+    | BOOL
+    | I8
+    | I16
+    | I32
+    | I64
+    | U8
+    | U16
+    | U32
+    | U64
+    | F32
+    | F64
+    | CHAR
+    | STR
+    | VOID
     ;
+
 scopedIdentifier
-    : ID (STATIC_ACCESS_OP ID)* 
+    : ID (STATIC_ACCESS_OP ID)*
     | THIS
     ;
 globalScopeIdentifier: (STATIC_ACCESS_OP ID)+;
 typeName: mutAndTypeModifiers? MUT? (scopedTypeIdentifier | toupleTypeDef);
 
-field: accessModifer? behaviourModifier* (typeName ID | typeName? THIS);
+field: accessModifer? behaviourModifier* typeName ID constAssignment?;
 parameter: typeName ID | AT MUT? THIS;
 
 importBlock: LCURLY importItem* RCURLY;
@@ -82,6 +97,7 @@ toupleTypeDef: LCURLY scopedTypeIdentifierList? RCURLY;
 functionParameters: LPAREN (parameter (COMMA parameter)* COMMA?)? RPAREN;
 scopedTypeIdentifierList: scopedTypeIdentifier (COMMA scopedTypeIdentifier)* COMMA?;
 assignment: ASSIGN expr;
+constAssignment: ASSIGN literalExpr;
 
 tag: TAG ID;
 returnStmt: RET expr;
@@ -104,21 +120,23 @@ stmt
     ;
 
 exprList: expr (COMMA expr)* COMMA?;
+
 stringContent
-    : STR_EXPR_START expr RCURLY
-    | STR_REF
-    | STR_DOLLAR
-    | STR_TEXT
-    | STR_ESCAPED_CHAR
+    : STR_EXPR_START expr RCURLY #strExpr
+    | STR_REF                    #strRef
+    | STR_DOLLAR 							   #strDollar
+    | STR_TEXT 								   #strText
+    | STR_ESCAPED_CHAR 				   #strEscapedChar
     ;
 literalExpr
-    : QUOTE_OPEN stringContent* QUOTE_CLOSE         #singleLineStringLit
-    | BACKTICK_OPEN stringContent* BACKTICK_CLOSE   #multiLineStringLit
-    | LIT_INT                                       #int
-    | LIT_DOUBLE                                    #double
-    | LIT_NULL                                      #null
-    | LIT_CHAR                                      #char
-    | (LIT_TRUE | LIT_FALSE)                        #bool
+    : QUOTE_OPEN stringContent* QUOTE_CLOSE                 #singleLineStringLit
+    | BACKTICK_OPEN stringContent* BACKTICK_CLOSE           #multiLineStringLit
+    | LIT_INT                                               #int
+    | LIT_DOUBLE                                            #double
+    | LIT_NULL                                              #null
+    | LIT_CHAR                                              #char
+    | (LIT_TRUE | LIT_FALSE)                                #bool
+    | LCURLY literalExpr (COMMA literalExpr)* COMMA? RCURLY #litTouple
     ;
 expr
     // Basic values

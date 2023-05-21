@@ -1,6 +1,6 @@
 package wingsmc.ego.types
 
-class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
+open class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
     companion object {
         val instance: EgoTypes = EgoTypes(null)
         val ERROR_TYPE = EgoType("error", 0u)
@@ -57,11 +57,8 @@ class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
             }
     }
 
-    private val types = HashMap<String, EgoType>()
-
-    fun getType(name: String): EgoType? {
-        return types[name] ?: parentTypeScope?.getType(name)
-    }
+    val types = HashMap<String, EgoType>()
+    fun getType(name: String): EgoType? = types[name] ?: parentTypeScope?.getType(name)
 
     fun addPrimitiveType(type: EgoType): Boolean {
         if (types.containsKey(type.name)) {
@@ -73,7 +70,6 @@ class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
         types[type.name] = type
         return true
     }
-
     fun addComplexType(type: EgoType): Boolean {
         if (addPrimitiveType(type)) {
             NULL.addParent(type)
