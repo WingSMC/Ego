@@ -12,7 +12,7 @@
 - [ ] Everything is const by default
 - [ ] Static type checking
 - [ ] Type inference (var/mut var)
-- [ ] Touple/anonymous types
+- [ ] Tuple/anonymous types
 - [ ] Structs
 - [ ] Rust style enums
 - [ ] Wrapper types (struct IntWrapper(i32))

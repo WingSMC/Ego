@@ -4,14 +4,15 @@ var a = "asd"
 mut var b = "$asd"
 var c = "${a}sd"
 var d = "\$$asd"
-var e = `asd`
-var f = `$asd`
-var s = `
-	$var      sometext
+var e = ```asd```
+var f = ```$asd```
+var s = ```
+	$```
+	$a        sometext
 	${a + b}  $$text
-`
-var h = `"\$"`
-var i = `Hello,
-	World!`
-var j = `a"Hello"`
-str l
+	$```
+```
+var h = ```"\$"```
+var i = ```Hello,
+	World!```
+str j = ```a`Hello````

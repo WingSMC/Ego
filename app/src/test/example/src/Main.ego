@@ -18,23 +18,23 @@ i32 main() {
 	u32 uint = 10u
 	u64 ulong = 10ul
 
-	// double
 	var d = 200.0e10
 	f32 c = 0.01f
 	var c = 'H'
 	var unicode = '\ufeff'
-	var slStr = "${if (1 < 2) c else 'Y'}ello"
-	// indentation is removed to the same depth as the start of the string
+	var hello = "${if (1 < 2) c else 'Y'}ello"
+
 	// Hello\n$\nWorld!
-	var mlStr = `
-		$slStr
+	var mlStr = ```
+		$hello
 		$$
 		World!
-	`
-	mut #i32 arr = [5; 1, 2, 3, 4, 5];
+	```
+
+	#mut i32 arr = [5; 1, 2, 3, 4, 5]
 	// 4 byte 00000001 0111111-01111111 11111111
 	//var bitMap = {{ ..., 1::1 , byte, short }};
-	var touple = {"asd", 'c', 10, 10.0};
+	var tuple = {"asd", 'c', 10, 10.0}
 
 	ret 0
 }

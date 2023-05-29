@@ -10,7 +10,8 @@ tokens {
     STR_REF,
     STR_EXPR_START,
     STR_ESCAPED_CHAR,
-    STR_TEXT
+    STR_TEXT,
+    STR_BACKTICK
 }
 
 fragment INTERP_VAR: '$' ID;
@@ -137,7 +138,7 @@ LIT_NULL: 'null';
 LIT_TRUE: 'true';
 LIT_FALSE: 'false';
 LIT_CHAR: '\'' (UNICODE_CHAR_LIT | ~[\\'] | '\\' .) '\'';
-BACKTICK_OPEN: ID? '`' -> pushMode(MultiLineString);
+BACKTICK_OPEN: ID? '```' -> pushMode(MultiLineString);
 QUOTE_OPEN: '"'        -> pushMode(LineString);
 
 /* Basic types */
@@ -164,14 +165,15 @@ mode LineString;
 QUOTE_CLOSE: '"'                               -> popMode;
 LINE_STR_ESCAPED_CHAR: STR_ESCAPED_CHAR_FRAG   -> type(STR_ESCAPED_CHAR);
 LINE_STR_TEXT: ~["$\\\n\r]+                    -> type(STR_TEXT);
-LINE_STR_DOLLAR: '$' '$'                       -> type(STR_DOLLAR);
+LINE_STR_DOLLAR: '$$'                          -> type(STR_DOLLAR);
 LINE_STR_REF: INTERP_VAR                       -> type(STR_REF);
 LINE_STR_EXPR_START: STR_EXPRESSION_START      -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
 LINE_STR_NL: '\r'? '\n'                        -> popMode;
 
 mode MultiLineString;
-BACKTICK_CLOSE: '`'                            -> popMode;
-MULTILINE_STR_TEXT: ~[$`]+                     -> type(STR_TEXT);
-MULTILINE_STR_DOLLAR: '$$'                     -> type(STR_DOLLAR);
+BACKTICK_CLOSE:  '`'? '```'                    -> popMode;
 MULTILINE_STR_REF: INTERP_VAR                  -> type(STR_REF);
+MULTILINE_STR_DOLLAR: '$$'                     -> type(STR_DOLLAR);
+MULTILINE_STR_BACKTICK: '$'? '`'               -> type(STR_BACKTICK);
+MULTILINE_STR_TEXT: ~[$`]+                     -> type(STR_TEXT);
 MULTILINE_STR_EXPR_START: STR_EXPRESSION_START -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);

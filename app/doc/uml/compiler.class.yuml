@@ -9,7 +9,7 @@
 [Symbol|name:String;type:Type;visibility:Visibility]
 [Type|name:String;size:UInt;parents:Set<Type>|<get>typeClass:TypeClass;<get>namespaceAsList:List<String>|isCompatible(Type):Boolean;addParent(Type):Boolean]
 [Visibility|PUBLIC;PROTECTED;PRIVATE]
-[TypeClass|BASIC;REFERENCE;POINTER;FUNCTION;TOUPLE;CLASS;INTERFACE;ENUM]
+[TypeClass|BASIC;REFERENCE;POINTER;FUNCTION;Tuple;CLASS;INTERFACE;ENUM]
 [NamespaceType|MODULE;INTERFACE;CLASS;ENUM]
 
 [Types]^[Scope|parent:Scope;symbols:Map<String,Symbol>]

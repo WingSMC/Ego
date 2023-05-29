@@ -116,7 +116,7 @@ class EgoModuleVisitor(
         return if (returnTypeNameCtx == null) {
             EgoTypes.VOID
         } else {
-            val returnTypeName = (returnTypeNameCtx.scopedTypeIdentifier() ?: returnTypeNameCtx.toupleTypeDef()).text
+            val returnTypeName = (returnTypeNameCtx.scopedTypeIdentifier() ?: returnTypeNameCtx.tupleTypeDef()).text
             val type = scope.getType(returnTypeName)
             if (type == null) {
                 System.err.println("Return type $returnTypeName does not exist @ ${scope.scopeName}::$tokenID")
@@ -130,7 +130,7 @@ class EgoModuleVisitor(
         val paramTypes = mutableListOf<EgoType>()
         for (paramCtx in paramCtxs) {
             val typeNameCtx = paramCtx.typeName()
-            val typeName = (typeNameCtx.scopedTypeIdentifier() ?: typeNameCtx.toupleTypeDef()).text
+            val typeName = (typeNameCtx.scopedTypeIdentifier() ?: typeNameCtx.tupleTypeDef()).text
             val type = scope.getType(typeName)
             if (type == null) {
                 System.err.println("Parameter type $typeName does not exist @ ${scope.scopeName}::${paramCtx.ID().text}")

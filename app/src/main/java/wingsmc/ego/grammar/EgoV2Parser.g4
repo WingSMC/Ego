@@ -122,11 +122,12 @@ stmt
 exprList: expr (COMMA expr)* COMMA?;
 
 stringContent
-    : STR_EXPR_START expr RCURLY #strExpr
-    | STR_REF                    #strRef
-    | STR_DOLLAR 							   #strDollar
-    | STR_TEXT 								   #strText
-    | STR_ESCAPED_CHAR 				   #strEscapedChar
+    : STR_EXPR_START expr RCURLY               #strExpr
+    | STR_REF                                  #strRef
+    | STR_DOLLAR                               #strDollar
+    | STR_TEXT                                 #strText
+    | STR_ESCAPED_CHAR                         #strEscapedChar
+    | STR_BACKTICK                             #strBacktick
     ;
 literalExpr
     : QUOTE_OPEN stringContent* QUOTE_CLOSE                 #singleLineStringLit
