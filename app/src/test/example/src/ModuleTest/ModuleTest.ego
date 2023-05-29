@@ -35,14 +35,14 @@ pub class A {
 	i32 x
 	str s
 
-	pub (this, i32 x, str s) {
+	pub (@this, i32 x, str s) {
 		this.x = x
 		this.s = s
 	}
 }
 
 pub interface Printable {
-	print(this)
+	print(@this)
 }
 
 pub A impl Printable {
