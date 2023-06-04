@@ -2,7 +2,7 @@
 * Documentation
 */
 
-module ModuleTest
+pub module
 
 import {
 	std {
@@ -24,11 +24,11 @@ import {
 }
 
 export {
-	crypto::hash as ct::hash
+	crypto::hash as hash
 }
 
 pub {str, i32} swapRadix(@i32 num) {
-	mut #i32 radix
+	// content
 }
 
 pub class A {

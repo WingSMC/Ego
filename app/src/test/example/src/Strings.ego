@@ -1,4 +1,4 @@
-public module
+pub module
 
 var a = "asd"
 mut var b = "$asd"

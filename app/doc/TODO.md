@@ -7,7 +7,7 @@
 - [ ] |> operator
 - [ ] Match case
 - [ ] RAII
-- [ ] range variable target boundry & step size (or even multiplying,... step size)
+- [ ] range variable target boundary & step size (or even multiplying,... step size)
 - [ ] VSCode extension
 - [ ] Conventions
 
@@ -30,7 +30,7 @@
 - [ ] stronger macro system (AST manipulation & code generation)
 - [ ] class inheritance
   - [ ] getters/setters C#/Kotlin style
-- [ ] generics
+- [ ] generics / templates
 - [ ] unsafe blocks
 - [ ] custom allocators
 - [ ] rust style mutexes
@@ -44,8 +44,10 @@
   - [ ] ORM
   - [ ] Serialization (JSON & Binary)
 - [ ] rust style borrow checker
-  - [ ] dispatchable annotaion for multithreading (would remove the need for most borrowings)
+  - [ ] dispatchable annotation for multithreading (would remove the need for most borrowings)
   - [ ] partial borrowing for collections
 - [ ] lazy evaluation for function arguments?
 - [ ] version migrator
 - [ ] Java-like exceptions
+- [ ] .\* and ->\* operators
+- [ ] <-< and >-> operators for bit rotation

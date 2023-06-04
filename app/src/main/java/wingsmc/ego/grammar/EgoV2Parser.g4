@@ -9,8 +9,7 @@ options {
 
 moduleFile:
     moduleDef
-    importDefinition?
-    exportDefinition?
+    (importDefinition exportDefinition?)?
     moduleMemberDefinition*
     EOF;
 
@@ -19,10 +18,10 @@ accessModifer
     | PRO
     ;
 behaviourModifier
-    : STATIC
-    | VIRTUAL
+    : VIRTUAL
     | OVERRIDE
     | ABSTRACT
+    | INLINE
     ;
 typeModifier
     : AT  // dereference / reference
@@ -77,29 +76,31 @@ scopedIdentifier
     : ID (STATIC_ACCESS_OP ID)*
     | THIS
     ;
-globalScopeIdentifier: (STATIC_ACCESS_OP ID)+;
-typeName: mutAndTypeModifiers? MUT? (scopedTypeIdentifier | toupleTypeDef);
+importGlobalScopeIdentifier: (STATIC_ACCESS_OP ID)+;
+importSourceRoot: STATIC_ACCESS_OP;
+typeName: mutAndTypeModifiers? MUT? (scopedTypeIdentifier | tupleTypeDef);
 
 field: accessModifer? behaviourModifier* typeName ID constAssignment?;
 parameter: typeName ID | AT MUT? THIS;
 
 importBlock: LCURLY importItem* RCURLY;
-importItem: (scopedIdentifier | globalScopeIdentifier)
-    (AS scopedIdentifier)? importBlock? COMMA?;
+importItem: ((scopedIdentifier | importGlobalScopeIdentifier)
+    (AS ID)? | importSourceRoot) importBlock? COMMA?;
 exportBlock: LCURLY exportItem* RCURLY;
-exportItem: scopedIdentifier (AS scopedIdentifier)? COMMA?;
+exportItem: scopedIdentifier (AS ID)? COMMA?;
 
 lambdaExpr: functionParameters (blockStmt | returnStmt);
 functionHeader: accessModifer? typeName? ID functionParameters;
 constructorDeclartation: accessModifer? lambdaExpr;
 
-toupleTypeDef: LCURLY scopedTypeIdentifierList? RCURLY;
+tupleTypeDef: LCURLY scopedTypeIdentifierList? RCURLY;
 functionParameters: LPAREN (parameter (COMMA parameter)* COMMA?)? RPAREN;
 scopedTypeIdentifierList: scopedTypeIdentifier (COMMA scopedTypeIdentifier)* COMMA?;
 assignment: ASSIGN expr;
 constAssignment: ASSIGN literalExpr;
 
 tag: TAG ID;
+iterationCount: SEMI ID (ASSIGN LIT_INT)?;
 returnStmt: RET expr;
 blockStmt: LCURLY (stmt SEMI?)* RCURLY;
 stmt
@@ -111,8 +112,8 @@ stmt
     | YIELD expr                                    #yield
     | ID COLON                                      #label
     | JMP ID                                        #jmp
-    | LOOP tag? expr? (SEMI ID)? blockStmt          #loop
-    | FOR tag? MUT? ID IN expr (SEMI ID)? blockStmt #for
+    | LOOP tag? expr? iterationCount? blockStmt     #loop
+    | FOR tag? MUT? ID IN expr iterationCount? blockStmt #for
     | WHILE tag? expr blockStmt                     #while
     | DO tag? blockStmt WHILE expr SEMI             #dowhile
     | typeName ID assignment?                       #varDef
@@ -145,16 +146,17 @@ expr
     | scopedIdentifier                              #id
     | LSQUARE expr SEMI exprList? RSQUARE           #array
     | LSQUARE exprList? RSQUARE                     #list
-    | LCURLY expr (COMMA expr)* COMMA? RCURLY       #touple
+    | LCURLY expr (COMMA expr)* COMMA? RCURLY       #tuple
     | IF expr (blockStmt | expr)
         (ELSE (blockStmt | expr))?                  #if
     | lambdaExpr                                    #lambda
-    | TAG LPAREN expr RPAREN                        #lambdaShorthand
+    | TAG LCURLY expr RCURLY                        #lambdaShorthand
     | TAG LIT_INT                                   #lambdaShorthandParam
     // Operators
     | LPAREN expr RPAREN                            #parensOp
     | expr RANGE ASSIGN? expr                       #range
-    | expr ACCESS_OP ID                             #accessOp
+    | expr MEMBER_ACCESS_OP ID                      #memberAccessOp
+    | expr POINTER_MEMBER_ACCESS_OP ID              #pointerMemberAccessOp
     | (NEW | SHARED | UNIQUE | DELETE) expr         #memoryOp
     | <assoc= right> AT expr                        #derefOp
     | MUT expr                                      #mutOp

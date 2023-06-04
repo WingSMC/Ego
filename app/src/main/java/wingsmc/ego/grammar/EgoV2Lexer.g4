@@ -33,7 +33,13 @@ LINE_COMMENT: '//' ~[\r\n]*  -> skip;
 WS: [ \t\r\n]+               -> skip;
 STATIC_ACCESS_OP: '::';
 RANGE: '..';
-ACCESS_OP: '.' | '->';
+MEMBER_ACCESS_OP: '.';
+POINTER_MEMBER_ACCESS_OP: '->';
+LEFT_NULL_CONDITIONAL_ASSIGN_OP: '?=';
+RIGHT_NULL_CONDITIONAL_ASSIGN_OP: '=?';
+NULL_COALESCING_OP: '??';
+NULL_CONDITIONAL_OP: '?.';
+RESULT_UNWRAP_OP: '?';
 COLON: ':';
 
 LCURLY: '{'  -> pushMode(DEFAULT_MODE);
@@ -75,6 +81,9 @@ STATIC: 'static';
 VIRTUAL: 'virtual';
 OVERRIDE: 'override';
 ABSTRACT: 'abstract';
+INLINE: 'inline';
+PLACEHOLDER: '#' [1-9];
+PIPING_PLACEHOLDER: '#0';
 
 /* Operators */
 IS: 'is';
@@ -139,7 +148,7 @@ LIT_TRUE: 'true';
 LIT_FALSE: 'false';
 LIT_CHAR: '\'' (UNICODE_CHAR_LIT | ~[\\'] | '\\' .) '\'';
 BACKTICK_OPEN: ID? '```' -> pushMode(MultiLineString);
-QUOTE_OPEN: '"'        -> pushMode(LineString);
+QUOTE_OPEN: '"'          -> pushMode(LineString);
 
 /* Basic types */
 VAR: 'var';
@@ -165,7 +174,6 @@ mode LineString;
 QUOTE_CLOSE: '"'                               -> popMode;
 LINE_STR_ESCAPED_CHAR: STR_ESCAPED_CHAR_FRAG   -> type(STR_ESCAPED_CHAR);
 LINE_STR_TEXT: ~["$\\\n\r]+                    -> type(STR_TEXT);
-LINE_STR_DOLLAR: '$$'                          -> type(STR_DOLLAR);
 LINE_STR_REF: INTERP_VAR                       -> type(STR_REF);
 LINE_STR_EXPR_START: STR_EXPRESSION_START      -> pushMode(DEFAULT_MODE), type(STR_EXPR_START);
 LINE_STR_NL: '\r'? '\n'                        -> popMode;
