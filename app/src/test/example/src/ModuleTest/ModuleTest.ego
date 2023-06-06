@@ -35,7 +35,7 @@ pub class A {
 	i32 x
 	str s
 
-	pub (@this, i32 x, str s) {
+	pub (@mut this, i32 x, str s) {
 		this.x = x
 		this.s = s
 	}

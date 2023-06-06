@@ -43,7 +43,11 @@ moduleMemberDefinition
 useStmt: USE ID ASSIGN scopedIdentifier;
 functionDeclaration: accessModifer? behaviourModifier* typeName? ID lambdaExpr;
 classDeclaration: accessModifer? behaviourModifier* CLASS ID LCURLY
-    (constructorDeclartation | functionDeclaration | field)*
+    ( constructorDeclartation
+    | destructorDeclaration
+    | functionDeclaration
+    | field
+    )*
     RCURLY;
 interfaceDeclaration: accessModifer? INTERFACE ID LCURLY
     (functionDeclaration | functionHeader)*
@@ -92,6 +96,7 @@ exportItem: scopedIdentifier (AS ID)? COMMA?;
 lambdaExpr: functionParameters (blockStmt | returnStmt);
 functionHeader: accessModifer? typeName? ID functionParameters;
 constructorDeclartation: accessModifer? lambdaExpr;
+destructorDeclaration: accessModifer? behaviourModifier* BIN_NOT lambdaExpr;
 
 tupleTypeDef: LCURLY scopedTypeIdentifierList? RCURLY;
 functionParameters: LPAREN (parameter (COMMA parameter)* COMMA?)? RPAREN;
