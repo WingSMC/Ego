@@ -1,48 +1,15 @@
-pub module Main
+pub module main
 
-import {
-    ::loopTest
+i32 main(i32 argc, ##i8 argv) {
+    var n = (argc * 10) as u32
+
+    ret n.factorial
 }
 
-i32 main() {
-    var bool1 = true
-    bool bool2 = false
-    #void nullVal = null
-
-    i8 byte = 127b
-    i16 short = 32767s
-    var int = 10
-    i64 long = 10l
-    u8 ubyte = 256ub
-    u16 ushort = 65536us
-    u32 uint = 10u
-    u64 ulong = 10ul
-
-    var d = 200.0e10
-    f32 c = 0.01f
-    var c = 'H'
-    var unicode = '\ufeff'
-    var hello = "${if (1 < 2) c else 'Y'}ello"
-
-    // Hello\n$\nWorld!
-    var mlStr = ```
-        $hello
-        $$
-        World!
-    ```
-
-    #mut i32 arr = [5; 1, 2, 3, 4, 5]
-    // 4 byte 00000001 0111111-01111111 11111111
-    //var bitMap = {{ ..., 1::1 , byte, short }};
-    var tuple = {"asd", 'c', 10, 10.0}
-
-    ret 0
-}
-
-u62 factorial(u8 in) {
-    ret if (in <= 1) {
+u32 factorial(u32 n) {
+    ret if (n <= 1) {
         1
     } else {
-        in * factorial(in - 1)
+        n * factorial(n - 1)
     }
 }

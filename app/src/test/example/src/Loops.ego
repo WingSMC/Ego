@@ -1,4 +1,4 @@
-module
+module Loops
 
 loopTest() {
     loop#outer 20; i {
