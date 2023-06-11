@@ -8,5 +8,6 @@ enum class EgoTypeClass {
     FUNCTION,
     CLASS,
     INTERFACE,
+    TUPLE,
     ENUM,
 }

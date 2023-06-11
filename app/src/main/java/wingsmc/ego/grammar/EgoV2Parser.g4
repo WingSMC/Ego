@@ -29,7 +29,7 @@ typeModifier
     ;
 mutAndTypeModifiers: (MUT? typeModifier)+;
 
-moduleDef: accessModifer? MODULE;
+moduleDef: accessModifer? MODULE ID;
 importDefinition: IMPORT importBlock;
 exportDefinition: EXPORT exportBlock;
 moduleMemberDefinition
@@ -52,7 +52,7 @@ classDeclaration: accessModifer? behaviourModifier* CLASS ID LCURLY
 interfaceDeclaration: accessModifer? INTERFACE ID LCURLY
     (functionDeclaration | functionHeader)*
     RCURLY;
-implementDeclaration: accessModifer? scopedIdentifier IMPL VIRTUAL? scopedIdentifier LCURLY
+implementDeclaration: accessModifer? scopedIdentifier IMPL scopedIdentifier LCURLY
     functionDeclaration*
     RCURLY;
 
@@ -198,6 +198,7 @@ expr
         ) expr                                      #logicOp
     | expr PIPE expr                                #pipe
     | expr IS scopedTypeIdentifier                  #is
+    | expr AS typeName                              #as
     // Assignment
     | <assoc= right> expr 
         ( EXP | MUL | DIV | MOD

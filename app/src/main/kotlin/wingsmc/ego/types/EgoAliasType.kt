@@ -1,6 +1,13 @@
 package wingsmc.ego.types
 
-class EgoAliasType(name: String, private val of: EgoType): EgoType(name, of.llvmType, of.size) {
+class EgoAliasType(
+    name: String,
+    val of: EgoType,
+): EgoType(
+    name,
+    of.llvmType,
+    of.size
+) {
     override val typeClass: EgoTypeClass
         get() = EgoTypeClass.ALIAS
 

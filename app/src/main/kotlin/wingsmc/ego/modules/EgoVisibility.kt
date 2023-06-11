@@ -1,18 +1,19 @@
 package wingsmc.ego.modules
 
-import wingsmc.ego.grammar.EgoV2Parser
-
 enum class EgoVisibility {
     PUBLIC {
-        override fun toString(): String = "pub"
-    },
-    PRIVATE {
-        override fun toString(): String = "prv"
+        override fun toString() = "pub"
     },
     PROTECTED {
-        override fun toString(): String = "pro"
+        override fun toString() = "pro"
+    },
+    PRIVATE {
+        override fun toString() = "prv"
+        override val llvmVisibility get() = " internal "
     },
     LOCAL {
-        override fun toString(): String = "loc"
+        override fun toString() = "loc"
     };
+
+    open val llvmVisibility = " "
 }

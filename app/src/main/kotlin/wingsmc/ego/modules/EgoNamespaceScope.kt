@@ -4,7 +4,7 @@ import wingsmc.ego.EgoScope
 import wingsmc.ego.EgoSymbol
 
 class EgoNamespaceScope(
-    private val name: String,
+    val name: String,
     val visibility: EgoVisibility,
     val type: EgoNamespaceType,
     parent: EgoNamespaceScope? = null
@@ -12,7 +12,7 @@ class EgoNamespaceScope(
     : EgoScope(parent)
     , java.io.Serializable
 {
-    private val children = HashMap<String, EgoNamespaceScope>()
+    val children = HashMap<String, EgoNamespaceScope>()
 
     fun getScope(name: String): EgoScope? = children[name]
     fun addScope(name: String, scope: EgoNamespaceScope): Boolean {
@@ -33,9 +33,20 @@ class EgoNamespaceScope(
     val parentNamespace: EgoNamespaceScope?
         get() = parent as EgoNamespaceScope?
 
-    val scopeName: String
-        get() {
-            val parentNs = parentNamespace
-            return if (parentNs == null) name else "${parentNs.scopeName}::$name"
-        }
+    val scopeName: String get() {
+        val parentNs = parentNamespace
+        return if (parentNs == null) name else "${parentNs.scopeName}::$name"
+    }
+
+    val llvmScopeName: String get() {
+        val parentNs = parentNamespace
+        return if (parentNs == null) name else "${parentNs.llvmScopeName}__$name"
+    }
+
+    override fun toString(): String {
+        return "+====================+n" +
+                "| $name\n" +
+                "+--------------------+\n" +
+                super.toString()
+    }
 }

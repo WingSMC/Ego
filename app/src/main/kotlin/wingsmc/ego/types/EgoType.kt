@@ -1,8 +1,15 @@
 package wingsmc.ego.types
 
-open class EgoType(val name: String, val llvmType: String, val size: UInt) {
-    private val compatibles = HashSet<EgoType>()
-    private val casts = HashMap<EgoType, String>()
+import wingsmc.ego.EgoSymbol
+import wingsmc.ego.modules.EgoVisibility
+
+open class EgoType(
+    val name: String,
+    val llvmType: String,
+    val size: UInt
+) {
+    val compatibles = HashSet<EgoType>()
+    val casts = HashMap<EgoType, String>()
 
     open fun isCompatible(other: EgoType): Boolean {
         return (
@@ -24,7 +31,7 @@ open class EgoType(val name: String, val llvmType: String, val size: UInt) {
 
     open fun makeCompatible(other: EgoType, cast: String) {
         casts[other] = cast
-        this.compatibles.add(other)
+        compatibles.add(other)
     }
 
     open infix fun noopCast(other: EgoType) {
@@ -42,6 +49,8 @@ open class EgoType(val name: String, val llvmType: String, val size: UInt) {
 
     open val typeClass: EgoTypeClass
         get() = EgoTypeClass.BASIC
+
+    open val getLLVMDefinition: String get() = ""
 
     override fun toString(): String = name
 }

@@ -3,9 +3,7 @@ package wingsmc.ego.modules
 import wingsmc.ego.EgoSymbol
 import wingsmc.ego.grammar.EgoV2Parser
 import wingsmc.ego.grammar.EgoV2ParserBaseVisitor
-import wingsmc.ego.types.EgoFunctionType
-import wingsmc.ego.types.EgoType
-import wingsmc.ego.types.EgoTypes
+import wingsmc.ego.types.*
 
 class EgoModuleVisitor(
     private val name: String,
@@ -18,19 +16,12 @@ class EgoModuleVisitor(
         return null
     }
 
-    override fun visitImportDefinition(ctx: EgoV2Parser.ImportDefinitionContext): Any? {
-        return super.visitImportDefinition(ctx)
-    }
-
-    override fun visitExportDefinition(ctx: EgoV2Parser.ExportDefinitionContext): Any? {
-        return super.visitExportDefinition(ctx)
-    }
-
     override fun visitClassDeclaration(ctx: EgoV2Parser.ClassDeclarationContext): Any? {
         val visibility = getAccessFromContext(ctx.accessModifer())
         val classID = ctx.ID().text
 
         val classScope = EgoNamespaceScope(classID, visibility, EgoNamespaceType.CLASS, scope)
+        val type = EgoClassType(classScope, visibility)
 
         scope.addScope(classID, classScope)
         scope = classScope
@@ -46,7 +37,7 @@ class EgoModuleVisitor(
         val interfaceID = ctx.ID().text
 
         val interfaceScope = EgoNamespaceScope(interfaceID, visibility, EgoNamespaceType.INTERFACE, scope)
-        scope.addComplexType(EgoType("${scope.scopeName}::$interfaceID", 4u))
+        scope.addType(EgoInterfaceType(interfaceScope, visibility))
         scope.addScope(interfaceID, interfaceScope)
         scope = interfaceScope
 
@@ -85,13 +76,15 @@ class EgoModuleVisitor(
 
         val returnType = validateReturnType(ctx.typeName(), functionID)
         val paramTypes = getParamTypes(ctx.lambdaExpr().functionParameters().parameter())
+        val fnType = EgoFunctionType(returnType, paramTypes)
 
         scope.addSymbol(
             functionID,
-            EgoSymbol(functionID, EgoFunctionType(
-                returnType,
-                paramTypes,
-            ), visibility)
+            EgoSymbol(
+                functionID,
+                fnType,
+                visibility,
+            )
         )
 
         return null

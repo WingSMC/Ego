@@ -1,4 +1,4 @@
-pub module
+pub module Strings
 
 var a = "asd"
 mut var b = "$asd"
@@ -7,12 +7,12 @@ var d = "\$$asd"
 var e = ```asd```
 var f = ```$asd```
 var s = ```
-	$```
-	$a        sometext
-	${a + b}  $$text
-	$```
+    $```
+    $a        sometext
+    ${a + b}  $$text
+    $```
 ```
 var h = ```"\$"```
 var i = ```Hello,
-	World!```
+    World!```
 str j = ```a`Hello````

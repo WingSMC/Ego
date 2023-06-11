@@ -1,10 +1,13 @@
 package wingsmc.ego
 
-import wingsmc.ego.types.EgoType
 import wingsmc.ego.types.EgoTypes
 
-open class EgoScope(val parent: EgoScope? = null): EgoTypes(parent) {
-    private val symbols = HashMap<String, EgoSymbol>()
+open class EgoScope(
+    val parent: EgoScope? = null,
+): EgoTypes(
+    parent,
+) {
+    val symbols = HashMap<String, EgoSymbol>()
 
     open fun getSymbol(name: String): EgoSymbol? = symbols[name] ?: parent?.getSymbol(name)
 
@@ -21,9 +24,9 @@ open class EgoScope(val parent: EgoScope? = null): EgoTypes(parent) {
     override fun toString(): String {
         val builder = StringBuilder()
         symbols.forEach { (_, symbol) ->
-            builder.append("\t$symbol\n")
+            builder.append("| $symbol\n")
         }
-        builder.append("----------------------\n")
+        builder.append("+--------------------+\n")
         builder.append(parent)
         return builder.toString()
     }
