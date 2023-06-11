@@ -1,6 +1,7 @@
 package wingsmc.ego.types
 
-open class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
+// TODO: Remove this class and merge it with NamespaceScope
+open class EgoTypes(val parentTypeScope: EgoTypes? = instance) {
     companion object {
         val instance: EgoTypes = EgoTypes(null)
 
@@ -154,5 +155,14 @@ open class EgoTypes(private val parentTypeScope: EgoTypes? = instance) {
         ERROR_TYPE.makeCompatible(type, "")
         types[type.name] = type
         return true
+    }
+
+    override fun toString(): String {
+        val builder = StringBuilder()
+        types.forEach() { (_, type) ->
+            builder.append("| $type\n")
+        }
+        builder.append("+--------------------+\n")
+        return builder.toString()
     }
 }

@@ -29,17 +29,35 @@ fun readAST(file: String): EgoV2Parser.ModuleFileContext? {
     return null
 }
 
-fun main(args: Array<String>) {
-    val visitor = EgoModuleVisitor("Test")
-    val ast = readAST("ModuleTest.ego")
-
-    if (ast == null) {
-        System.err.println("Couldn't parse file")
-        return
+fun processRootFolder(folder: String): Boolean {
+    val root = Paths.get(folder)
+    val files = root.toFile().listFiles()
+    if (files == null) {
+        System.err.println("Invalid folder path")
+        return false
     }
 
-    visitor.visit(ast)
-    println(visitor)
+    val entry = files.find { it.name == "main.ego" }
+    if (entry == null) {
+        System.err.println("Couldn't find main.ego")
+        return false
+    }
 
-    EgoModuleCache.save()
+    val moduleVisitor = EgoModuleVisitor("main")
+    val ast = readAST(entry.absolutePath)
+    if (ast == null) {
+        System.err.println("Couldn't parse file")
+        return false
+    }
+
+    if (moduleVisitor.visit(ast) == null) return false
+    val visitor = EgoVisitor(moduleVisitor.name)
+
+    println(visitor)
+    return true
+}
+
+fun main(args: Array<String>) {
+    if (processRootFolder("./app/src/test/example/src"))
+        EgoModuleCache.save()
 }

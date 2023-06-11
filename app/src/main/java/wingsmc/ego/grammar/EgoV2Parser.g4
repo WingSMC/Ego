@@ -27,7 +27,7 @@ typeModifier
     : AT  // dereference / reference
     | TAG // address of  / pointer
     ;
-mutAndTypeModifiers: (MUT? typeModifier)+;
+mutAndTypeModifier: MUT? typeModifier;
 
 moduleDef: accessModifer? MODULE ID;
 importDefinition: IMPORT importBlock;
@@ -82,10 +82,13 @@ scopedIdentifier
     ;
 importGlobalScopeIdentifier: (STATIC_ACCESS_OP ID)+;
 importSourceRoot: STATIC_ACCESS_OP;
-typeName: mutAndTypeModifiers? MUT? (scopedTypeIdentifier | tupleTypeDef);
+typeName: mutAndTypeModifier* MUT? (scopedTypeIdentifier | tupleTypeDef);
 
 field: accessModifer? behaviourModifier* typeName ID constAssignment?;
-parameter: typeName ID | AT MUT? THIS;
+parameter
+    : typeName ID
+    | AT MUT? THIS
+    ;
 
 importBlock: LCURLY importItem* RCURLY;
 importItem: ((scopedIdentifier | importGlobalScopeIdentifier)

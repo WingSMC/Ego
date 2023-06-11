@@ -8,13 +8,23 @@ class EgoNamespaceScope(
     val visibility: EgoVisibility,
     val type: EgoNamespaceType,
     parent: EgoNamespaceScope? = null
-)
-    : EgoScope(parent)
-    , java.io.Serializable
+): EgoScope(
+    parent,
+), java.io.Serializable
 {
     val children = HashMap<String, EgoNamespaceScope>()
 
-    fun getScope(name: String): EgoScope? = children[name]
+    fun getScope(name: String): EgoNamespaceScope? {
+        return if (name == this.name) this else children.values.run {
+            var scope: EgoNamespaceScope? = null
+            for (child in this) {
+                scope = child.getScope(name)
+                if (scope != null) break
+            }
+            scope
+        }
+    }
+
     fun addScope(name: String, scope: EgoNamespaceScope): Boolean {
         if (children.containsKey(name)) {
             println("Scope $name already exists in this namespace")
@@ -24,16 +34,9 @@ class EgoNamespaceScope(
         children[name] = scope
         return true
     }
+    val parentNamespace get() = parent as EgoNamespaceScope?
 
-    override fun getSymbol(name: String): EgoSymbol? {
-        return super.getSymbol(name)
-                ?: children.values.firstNotNullOfOrNull { it.getSymbol(name) }
-    }
-
-    val parentNamespace: EgoNamespaceScope?
-        get() = parent as EgoNamespaceScope?
-
-    val scopeName: String get() {
+    override val scopeName: String get() {
         val parentNs = parentNamespace
         return if (parentNs == null) name else "${parentNs.scopeName}::$name"
     }
@@ -43,10 +46,9 @@ class EgoNamespaceScope(
         return if (parentNs == null) name else "${parentNs.llvmScopeName}__$name"
     }
 
-    override fun toString(): String {
-        return "+====================+n" +
-                "| $name\n" +
-                "+--------------------+\n" +
-                super.toString()
-    }
+    override fun toString() =
+        "+====================+\n" +
+        "| $name\n" +
+        "+....................+\n" +
+        super.toString()
 }

@@ -2,14 +2,7 @@ pub module main
 
 i32 main(i32 argc, ##i8 argv) {
     var n = (argc * 10) as u32
-
-    ret n.factorial
+    ret n.factorial()
 }
 
-u32 factorial(u32 n) {
-    ret if (n <= 1) {
-        1
-    } else {
-        n * factorial(n - 1)
-    }
-}
+u32 factorial(u32 n) => if (n <= 1) 1 else n * factorial(n - 1)

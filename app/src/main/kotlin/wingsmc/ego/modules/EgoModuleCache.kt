@@ -20,8 +20,8 @@ object EgoModuleCache: java.io.Serializable {
             lDependencies = null
             System.err.println("Possible cache corruption, ignoring cache...")
         } finally {
-            rootScope = lRootScope ?: EgoNamespaceScope("", EgoVisibility.PUBLIC, EgoNamespaceType.MODULE)
-            dependencies = lDependencies ?: EgoNamespaceScope("", EgoVisibility.PUBLIC, EgoNamespaceType.MODULE)
+            rootScope = lRootScope ?: EgoNamespaceScope("p-root", EgoVisibility.PUBLIC, EgoNamespaceType.MODULE)
+            dependencies = lDependencies ?: EgoNamespaceScope("d-root", EgoVisibility.PUBLIC, EgoNamespaceType.MODULE)
         }
     }
 
